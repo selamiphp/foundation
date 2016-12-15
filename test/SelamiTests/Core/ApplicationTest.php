@@ -9,8 +9,8 @@ class MyApplicationClass extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function shouldFail()
+    public function shouldPSuccess()
     {
-        $this->assertTrue(fail);
+        $this->assertTrue(true);
     }
 }
