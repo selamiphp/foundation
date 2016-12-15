@@ -98,16 +98,18 @@ class Application
 
     private function runDispatcher(array $route)
     {
+        $this->response = new Result($this->container, $this->session);
+
         switch ($route['status']) {
             case 405:
-                $this->notFound(405, $this->config['default_return_type'], 'Method Not Allowed');
+                $this->response->notFound(405, $this->config['default_return_type'], 'Method Not Allowed');
                 break;
             case 200:
                 $this->runRoute($route['controller'], $route['returnType'], $route['args']);
                 break;
             case 404:
             default:
-                $this->notFound(404, $this->config['default_return_type'], 'Not Found');
+                $this->response->notFound(404, $this->config['default_return_type'], 'Not Found');
                 break;
         }
     }
@@ -122,7 +124,6 @@ class Application
         $controllerInstance = new $controller($this->container, $args);
         $functionOutput = $controllerInstance->invoke();
         $returnFunction = 'return' . ucfirst($returnType);
-        $this->response = new Result($this->container, $this->session);
         $this->response->$returnFunction($functionOutput, $this->controller);
     }
 
