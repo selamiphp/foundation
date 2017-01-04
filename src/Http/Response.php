@@ -1,15 +1,16 @@
 <?php
+declare(strict_types=1);
 
 namespace Selami\Http;
 
 class Response
 {
-    protected $response     = null;
+    protected $response;
     protected $outputType   = 'html';
     protected $headers      = [];
     protected $statusCode   = 200;
-    protected $body         = null;
-    protected $redirectUri  = null;
+    protected $body;
+    protected $redirectUri;
     protected $version      = '1.0';
     protected static $validOutputTypes = ['html', 'json', 'text', 'redirect'];
     protected static $statusTexts = [
@@ -76,50 +77,48 @@ class Response
         511 => 'Network Authentication Required',                             // RFC6585
     ];
 
-    public function setHeaders($headers = null)
+    public function setHeaders(array $headers = [])
     {
-        $this->headers['X-Powered-By']      = 'Selamy';
+        $this->headers['X-Powered-By']      = 'Selami';
         $this->headers['X-Frame-Options']   = 'DENY';
         $this->headers['X-Frame-Options']   = 'SAMEORIGIN';
         $this->headers['X-XSS-Protection']  = '1; mode=block';
         $this->headers['Strict-Transport-Security'] = 'max-age=31536000';
-        if (is_array($headers)) {
-            foreach ($headers as $header => $value) {
-                $this->setHeader($header, $value);
-            }
+        foreach ($headers as $header => $value) {
+            $this->setHeader($header, $value);
         }
     }
 
-    public function setHeader($header, $value)
+    public function setHeader(string $header, string $value)
     {
         $this->headers[$header] = $value;
     }
 
-    public function setStatusCode($statusCode)
+    public function setStatusCode(int $statusCode)
     {
         $this->statusCode = $statusCode;
     }
 
-    public function setRedirect($redirectUri, $code = 302)
+    public function setRedirect(string $redirectUri, int $code = 302)
     {
         $this->statusCode = $code;
 
         $this->redirectUri = $redirectUri;
     }
 
-    public function setBody($body)
+    public function setBody(string $body)
     {
         $this->body = $body;
     }
 
-    public function setData($body)
+    public function setData(array $body)
     {
         $this->body = json_encode($body);
     }
 
-    public function setOutputType($type)
+    public function setOutputType(string $type)
     {
-        if (in_array($type, self::$validOutputTypes)) {
+        if (in_array($type, self::$validOutputTypes, true)) {
             $this->outputType = $type;
         }
     }

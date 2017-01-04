@@ -1,9 +1,9 @@
 <?php
-
+declare(strict_types=1);
 namespace Selami\Core;
 
 use Selami as s;
-use Pimple\Container;
+use Interop\Container\ContainerInterface;
 use Selami\View\ViewInterface;
 use Symfony\Component\HttpFoundation\Session\Session;
 
@@ -23,10 +23,10 @@ class Result
         'redirect'      => null
     ];
 
-    public function __construct(Container $container, Session $session)
+    public function __construct(ContainerInterface $container, Session $session)
     {
         $this->container = $container;
-        $this->config   = $container['config'];
+        $this->config   = $container->get('config');
         $this->session  =$session;
     }
 
@@ -73,7 +73,7 @@ class Result
 
     public function returnHtml(array $functionOutput, string $controller)
     {
-        $this->useView($this->container['view']);
+        $this->useView($this->container->get('view'));
         $paths = explode("\\", $controller);
         $templateFile = array_pop($paths);
         $templateFolder = array_pop($paths);
@@ -98,7 +98,7 @@ class Result
 
     public function returnText(array $functionOutput, string $controller)
     {
-        $this->useView($this->container['view']);
+        $this->useView($this->container->get('view'));
         $paths = explode("\\", $controller);
         $templateFile = array_pop($paths);
         $templateFolder = array_pop($paths);
@@ -125,7 +125,7 @@ class Result
         if ($returnType == 'json') {
             $this->result['body'] = ['status' => $status, 'message' => $message];
         } else {
-            $this->useView($this->container['view']);
+            $this->useView($this->container->get('view'));
             $notFoundTemplate = '_404.twig';
             $this->result['contentType'] = $returnType;
             $this->result['body'] = $this->view->render(

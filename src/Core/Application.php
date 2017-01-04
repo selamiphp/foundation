@@ -13,22 +13,14 @@ namespace Selami\Core;
 
 use Selami as s;
 use Selami\Router;
-use Pimple\Container;
-use Selami\View\ViewInterface;
+use Interop\Container\ContainerInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Symfony\Component\HttpFoundation\Session\Session as SymfonySession;
 use Selami\Http\Psr7Response;
-use FastRoute;
 
 class Application
 {
-    /**
-     * Container
-     *
-     * @var ContainerInterface
-     */
-    private $container;
 
     /**
      * ServerRequest
@@ -53,17 +45,22 @@ class Application
     private $session;
     private $response;
 
-    public function __construct(Container $container, array $config, ServerRequestInterface $request, Router $router)
+    public function __construct(array $config, ServerRequestInterface $request, Router $router, SymfonySession $session)
     {
-        $this->container = $container;
         $this->request = $request;
         $this->config = array_merge($this->config, $config);
         $this->route = $router->getRoute();
+        $this->session = $session;
     }
 
-    public static function selamiApplicationFactory(Container $container)
+    public static function selamiApplicationFactory(ContainerInterface $container)
     {
-        return new Application($container, $container['config'], $container['request'], $container['router']);
+        return new Application(
+            $container->get('config'),
+            $container->get('request'),
+            $container->get('router'),
+            $container->get('session')
+        );
     }
 
     public function __invoke(ServerRequestInterface $request, ResponseInterface $response, callable $next = null)
@@ -90,7 +87,6 @@ class Application
         ini_set('session.use_only_cookies', '1');
         ini_set('session.cookie_httponly', '1');
         ini_set('session.name', 'SELAMISESSID');
-        $this->session = $this->container['session'];
         if (!$this->session->isStarted()) {
             $this->session->start();
         }

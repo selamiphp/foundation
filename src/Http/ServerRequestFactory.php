@@ -1,10 +1,9 @@
 <?php
+declare(strict_types=1);
 
 namespace Selami\Http;
 
-use Selami\Http\ServerRequest;
 use Zend\Diactoros\ServerRequestFactory as DiactorosServerRequestFactory;
-use Zend\Diactoros\Uri;
 
 final class ServerRequestFactory extends DiactorosServerRequestFactory
 {
