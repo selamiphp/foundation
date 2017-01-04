@@ -67,7 +67,8 @@ class Application
             $container->get('config'),
             $container->get('request'),
             $container->get('router'),
-            $container->get('session')
+            $container->get('session'),
+            $container
         );
     }
 
