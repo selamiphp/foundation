@@ -44,13 +44,21 @@ class Application
     private $controller;
     private $session;
     private $response;
+    private $container;
 
-    public function __construct(array $config, ServerRequestInterface $request, Router $router, SymfonySession $session)
+    public function __construct(
+        array $config,
+            ServerRequestInterface $request,
+            Router $router,
+            SymfonySession $session,
+            ContainerInterface $container
+    )
     {
         $this->request = $request;
         $this->config = array_merge($this->config, $config);
         $this->route = $router->getRoute();
         $this->session = $session;
+        $this->container  = $container;
     }
 
     public static function selamiApplicationFactory(ContainerInterface $container)
