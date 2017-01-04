@@ -126,8 +126,8 @@ class Application
             $message = "Controller has not class name as {$controller}";
             throw new \BadMethodCallException($message);
         }
-        $controllerInstance = new $controller($this->container, $args);
-        $functionOutput = $controllerInstance->invoke();
+        $controllerInstance = new $controller($this->container);
+        $functionOutput = $controllerInstance->invoke($this->request, $args);
         $returnFunction = 'return' . ucfirst($returnType);
         $this->response->$returnFunction($functionOutput, $this->controller);
     }
