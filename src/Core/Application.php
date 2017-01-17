@@ -48,12 +48,12 @@ class Application
 
     public function __construct(
         array $config,
-            ServerRequestInterface $request,
-            Router $router,
-            SymfonySession $session,
-            ContainerInterface $container
-    )
-    {
+        ServerRequestInterface $request,
+        Router $router,
+        SymfonySession $session,
+        ContainerInterface $container
+    ) {
+    
         $this->request = $request;
         $this->config = array_merge($this->config, $config);
         $this->route = $router->getRoute();

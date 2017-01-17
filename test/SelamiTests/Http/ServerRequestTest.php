@@ -67,9 +67,5 @@ class MyServerRequestClass extends \PHPUnit_Framework_TestCase
         $_SERVER['SERVER_PROTOCOL'] = 'None';
         $this->expectException(UnexpectedValueException::class);
         s\Http\ServerRequestFactory::fromGlobals($_SERVER, $_GET, $_POST, $_COOKIE, $_FILES);
-
     }
-
-
-
 }

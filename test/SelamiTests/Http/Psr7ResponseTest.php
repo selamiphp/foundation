@@ -33,7 +33,5 @@ class TestPsr7Response extends \PHPUnit_Framework_TestCase
         $psr7Response  = new s\Http\PSR7Response;
         $response = $psr7Response(new DiactorosResponse(), $this->response);
         $this->assertInstanceOf(DiactorosResponse::class, $response);
-
     }
-
 }
