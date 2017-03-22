@@ -127,7 +127,20 @@ class Application
             throw new \BadMethodCallException($message);
         }
         $controllerInstance = new $controller($this->container);
+        if (method_exists($controllerInstance, 'applicationLoad')) {
+            $controllerInstance->applicationLoad();
+        }
+        if (method_exists($controllerInstance, 'controllerLoad')) {
+            $controllerInstance->controllerLoad();
+        }
         $functionOutput = $controllerInstance->invoke($this->request, $args);
+
+        if (method_exists($controllerInstance, 'controllerClose')) {
+            $controllerInstance->controllerClose();
+        }
+        if (method_exists($controllerInstance, 'applicationClose')) {
+            $controllerInstance->applicationClose();
+        }
         $returnFunction = 'return' . ucfirst($returnType);
         $this->response->$returnFunction($functionOutput, $this->controller);
     }
