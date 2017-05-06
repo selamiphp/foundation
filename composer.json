@@ -1,5 +1,5 @@
 {
-  "name": "selami/core",
+  "name": "selami/foundation",
   "type": "framework",
   "description": "A PHP Framework for Selamis",
   "keywords": ["Framework", "Diactoros", "Twig"],
