@@ -2,7 +2,7 @@
   "name": "selami/foundation",
   "type": "framework",
   "description": "A PHP Framework for Selamis",
-  "keywords": ["Framework", "Diactoros", "Twig"],
+  "keywords": ["Framework", "Micro Framework", "Diactoros", "Twig"],
   "homepage": "https://github.com/selamiphp/core",
   "license": "MIT",
   "authors": [
