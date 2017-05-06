@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 /**
  * Selami Application
@@ -7,11 +8,9 @@
  * @license   https://github.com/selamiphp/core/blob/master/LICENSE (MIT License)
  */
 
-declare(strict_types = 1);
 
 namespace Selami\Core;
 
-use Selami as s;
 use Selami\Router;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ServerRequestInterface;
