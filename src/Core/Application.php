@@ -13,7 +13,7 @@ namespace Selami\Core;
 
 use Selami as s;
 use Selami\Router;
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Symfony\Component\HttpFoundation\Session\Session as SymfonySession;
@@ -61,7 +61,7 @@ class Application
         $this->container  = $container;
     }
 
-    public static function selamiApplicationFactory(ContainerInterface $container)
+    public static function selamiApplicationFactory(ContainerInterface $container) : Application
     {
         return new Application(
             $container->get('config'),
@@ -72,8 +72,11 @@ class Application
         );
     }
 
-    public function __invoke(ServerRequestInterface $request, ResponseInterface $response, callable $next = null)
-    {
+    public function __invoke(
+        ServerRequestInterface $request,
+        ResponseInterface $response,
+        callable $next = null
+    ) : ResponseInterface {
         $this->request = $request;
         $this->run();
         $psr7Response  = new Psr7Response;
@@ -84,13 +87,13 @@ class Application
         return $response;
     }
 
-    private function run()
+    private function run() : void
     {
         $this->startSession();
         $this->runDispatcher($this->route['route']);
     }
 
-    private function startSession()
+    private function startSession() :void
     {
         ini_set('session.use_cookies', '1');
         ini_set('session.use_only_cookies', '1');
@@ -101,7 +104,7 @@ class Application
         }
     }
 
-    private function runDispatcher(array $route)
+    private function runDispatcher(array $route) : void
     {
         $this->response = new Result($this->container, $this->session);
 
@@ -119,7 +122,7 @@ class Application
         }
     }
 
-    private function runRoute(string $controller, string $returnType = 'html', array $args = [])
+    private function runRoute(string $controller, string $returnType = 'html', array $args = []) : void
     {
         $this->controller = $controller;
         if (!class_exists($controller)) {
@@ -145,13 +148,13 @@ class Application
         $this->response->$returnFunction($functionOutput, $this->controller);
     }
 
-    public function getResponse()
+    public function getResponse() : void
     {
         $this->run();
         return $this->response->getResponse();
     }
 
-    public function sendResponse()
+    public function sendResponse() : void
     {
         $this->run();
         return $this->response->sendResponse();

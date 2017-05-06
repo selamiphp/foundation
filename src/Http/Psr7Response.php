@@ -15,7 +15,7 @@ class Psr7Response
         return $new;
     }
 
-    private function psr7ResponseHeaders(PsrResponse $response, array $responseData)
+    private function psr7ResponseHeaders(PsrResponse $response, array $responseData) : PsrResponse
     {
         $new = $response;
         foreach ($responseData['headers'] as $header => $value) {
@@ -24,7 +24,7 @@ class Psr7Response
         return $new;
     }
 
-    private function psr7ResponseBody(PsrResponse $response, array $responseData)
+    private function psr7ResponseBody(PsrResponse $response, array $responseData) : PsrResponse
     {
         if ($responseData['contentType'] === 'redirect') {
             return $response->withHeader('Location', $responseData['redirect']);

@@ -7,7 +7,7 @@ use Psr\Http\Message\ServerRequestInterface as PsrServerRequestInterface;
 
 interface ServerRequestInterface extends PsrServerRequestInterface
 {
-    public function getParam(string $key, $default = null);
+    public function getParam(string $key, $default = null) : ?string;
 
-    public function getParams();
+    public function getParams() : array;
 }

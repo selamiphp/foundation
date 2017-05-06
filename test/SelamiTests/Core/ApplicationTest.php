@@ -3,8 +3,8 @@
 namespace tests;
 
 use Selami as s;
-
-class MyApplicationClass extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+class MyApplicationClass extends TestCase
 {
     /**
      * @test

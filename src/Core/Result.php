@@ -3,7 +3,7 @@ declare(strict_types=1);
 namespace Selami\Core;
 
 use Selami as s;
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use Selami\View\ViewInterface;
 use Symfony\Component\HttpFoundation\Session\Session;
 
@@ -26,11 +26,11 @@ class Result
     public function __construct(ContainerInterface $container, Session $session)
     {
         $this->container = $container;
-        $this->config   = $container->get('config');
-        $this->session  =$session;
+        $this->config = $container->get('config');
+        $this->session =$session;
     }
 
-    private function checkTemplateFile($template, $type, $controller)
+    private function checkTemplateFile($template, $type, $controller) : void
     {
         if (!file_exists($this->config['templates_dir'] .'/'. $template)) {
             $message  = sprintf(
@@ -43,7 +43,7 @@ class Result
         }
     }
 
-    public function returnRedirect(array $functionOutput, string $controller)
+    public function returnRedirect(array $functionOutput, string $controller) : void
     {
         $this->result['contentType'] = 'redirect';
         if (isset($functionOutput['redirect'])) {
@@ -53,7 +53,7 @@ class Result
         }
     }
 
-    public function returnJson(array $functionOutput, string $controller)
+    public function returnJson(array $functionOutput, string $controller) : void
     {
         $this->result['contentType'] = 'json';
         if (isset($functionOutput['redirect'])) {
@@ -71,7 +71,7 @@ class Result
         $this->result['data'] = $functionOutput;
     }
 
-    public function returnHtml(array $functionOutput, string $controller)
+    public function returnHtml(array $functionOutput, string $controller) : void
     {
         $this->useView($this->container->get('view'));
         $paths = explode("\\", $controller);
@@ -96,7 +96,7 @@ class Result
     }
 
 
-    public function returnText(array $functionOutput, string $controller)
+    public function returnText(array $functionOutput, string $controller) : void
     {
         $this->useView($this->container->get('view'));
         $paths = explode("\\", $controller);
@@ -120,7 +120,7 @@ class Result
         $this->result['body'] = $this->view->render($mainTemplate, $functionOutput);
     }
 
-    public function notFound($status = 404, $returnType = 'html', $message = 'Not Found')
+    public function notFound($status = 404, $returnType = 'html', $message = 'Not Found') : void
     {
         if ($returnType == 'json') {
             $this->result['body'] = ['status' => $status, 'message' => $message];
@@ -136,15 +136,14 @@ class Result
         $this->result['statusCode']=$status;
     }
 
-    private function useView(ViewInterface $view)
+    private function useView(ViewInterface $view) : void
     {
         $this->view = $view;
     }
 
-    private function setHeaders()
+    private function setHeaders() : void
     {
         $this->result['headers']['X-Powered-By']      = 'r/selami';
-        $this->result['headers']['X-Frame-Options']   = 'DENY';
         $this->result['headers']['X-Frame-Options']   = 'SAMEORIGIN';
         $this->result['headers']['X-XSS-Protection']  = '1; mode=block';
         $this->result['headers']['Strict-Transport-Security'] = 'max-age=31536000';
@@ -162,7 +161,7 @@ class Result
         return $this->result;
     }
 
-    public function sendResponse()
+    public function sendResponse() : void
     {
         $response = new s\Http\Response();
         $response->setHeaders($this->result['headers']);

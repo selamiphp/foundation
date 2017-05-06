@@ -4,8 +4,8 @@ namespace tests;
 
 use Selami as s;
 use Zend\Diactoros\Response as DiactorosResponse;
-
-class TestPsr7Response extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+class TestPsr7Response extends TestCase
 {
     private $response   = [
         'statusCode'    => 200,

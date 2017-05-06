@@ -8,7 +8,7 @@ use Zend\Diactoros\ServerRequest as DiactorosServerRequest;
 
 final class ServerRequest extends DiactorosServerRequest implements Selami\Interfaces\ServerRequestInterface
 {
-    public function getParam(string $key, $default = null)
+    public function getParam(string $key, $default = null) : ?string
     {
         $postParams = $this->getParsedBody();
         $getParams  = $this->getQueryParams();
@@ -23,7 +23,7 @@ final class ServerRequest extends DiactorosServerRequest implements Selami\Inter
         return $return;
     }
 
-    public function getParams()
+    public function getParams() : array
     {
         $params     = $this->getQueryParams();
         $postParams = $this->getParsedBody();

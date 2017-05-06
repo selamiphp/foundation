@@ -77,10 +77,9 @@ class Response
         511 => 'Network Authentication Required',                             // RFC6585
     ];
 
-    public function setHeaders(array $headers = [])
+    public function setHeaders(array $headers = []) : void
     {
         $this->headers['X-Powered-By']      = 'Selami';
-        $this->headers['X-Frame-Options']   = 'DENY';
         $this->headers['X-Frame-Options']   = 'SAMEORIGIN';
         $this->headers['X-XSS-Protection']  = '1; mode=block';
         $this->headers['Strict-Transport-Security'] = 'max-age=31536000';
@@ -89,65 +88,65 @@ class Response
         }
     }
 
-    public function setHeader(string $header, string $value)
+    public function setHeader(string $header, string $value) : void
     {
         $this->headers[$header] = $value;
     }
 
-    public function setStatusCode(int $statusCode)
+    public function setStatusCode(int $statusCode) : void
     {
         $this->statusCode = $statusCode;
     }
 
-    public function setRedirect(string $redirectUri, int $code = 302)
+    public function setRedirect(string $redirectUri, int $code = 302) : void
     {
         $this->statusCode = $code;
 
         $this->redirectUri = $redirectUri;
     }
 
-    public function setBody(string $body)
+    public function setBody(string $body) : void
     {
         $this->body = $body;
     }
 
-    public function setData(array $body)
+    public function setData(array $body) : void
     {
         $this->body = json_encode($body);
     }
 
-    public function setOutputType(string $type)
+    public function setOutputType(string $type) : void
     {
         if (in_array($type, self::$validOutputTypes, true)) {
             $this->outputType = $type;
         }
     }
 
-    public function getOutputType()
+    public function getOutputType() : string
     {
         return $this->outputType;
     }
 
-    public function getHeaders()
+    public function getHeaders() : array
     {
         return $this->headers;
     }
 
-    public function getStatusCode()
+    public function getStatusCode() : int
     {
         return $this->statusCode;
     }
-    public function getBody()
+    public function getBody() : string
     {
         return $this->body;
     }
 
-    public function getRedirectUri()
+    public function getRedirectUri() : string
     {
         return $this->redirectUri;
     }
 
-    public function sendHeaders()
+    public function sendHeaders() : void
     {
         if ($this->outputType === 'json') {
             $this->setHeader('Content-Type', 'application/json; charset=UTF-8');
@@ -161,7 +160,7 @@ class Response
         if (!headers_sent()) {
             if ($this->outputType === 'redirect' && $this->redirectUri !== null) {
                     header('location:' . $this->redirectUri);
-                    return;
+                    exit;
             }
             foreach ($this->headers as $name => $value) {
                 header($name . ': ' . $value, false, $this->statusCode);
@@ -179,12 +178,12 @@ class Response
         }
     }
 
-    public function sendContent()
+    public function sendContent() : void
     {
         echo $this->body;
     }
 
-    public function send()
+    public function send() : void
     {
         $this->sendHeaders();
         $this->sendContent();

@@ -3,14 +3,15 @@
 namespace tests;
 
 use Selami as s;
+use PHPUnit\Framework\TestCase;
 use Zend\Diactoros\ServerRequest as DiactorosRequest;
 use UnexpectedValueException;
 
-class MyServerRequestClass extends \PHPUnit_Framework_TestCase
+class MyServerRequestClass extends TestCase
 {
     public function setUp()
     {
-        $_SERVER['DOCUMENT_ROOT'] = __DIR__."/htdocs";
+        $_SERVER['DOCUMENT_ROOT'] = __DIR__ . '/htdocs';
         $_SERVER['SCRIPT_NAME'] = '/index.php';
         $_SERVER['REQUEST_URI'] = '/';
         $_SERVER['SERVER_PROTOCOL'] = 'HTTP/1.1';
@@ -20,8 +21,8 @@ class MyServerRequestClass extends \PHPUnit_Framework_TestCase
         $_SERVER['QUERY_STRING'] = 'p1=1&p2=2';
         $_SERVER['HTTPS'] = '';
         $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
-        $_GET       = ['var_1' => 1, 'var_2' => 2, 'var_3' =>  3];
-        $_POST      = ['var_4' => 4, 'var_5' => 5, 'var_3' =>  6];
+        $_GET       = ['var_1' => '1', 'var_2' => '2', 'var_3' =>  '3'];
+        $_POST      = ['var_4' => '4', 'var_5' => '5', 'var_3' =>  '6'];
         $_COOKIE    = [];
         $_FILES     = [];
     }
@@ -43,8 +44,8 @@ class MyServerRequestClass extends \PHPUnit_Framework_TestCase
         $request = s\Http\ServerRequestFactory::fromGlobals($_SERVER, $_GET, $_POST, $_COOKIE, $_FILES);
         $var_1= $request->getParam('var_1');
         $var_3 = $request->getParam('var_3');
-        $this->assertEquals(1, $var_1);
-        $this->assertEquals(6, $var_3);
+        $this->assertEquals('1', $var_1);
+        $this->assertEquals('6', $var_3);
     }
     /**
      * @test
@@ -53,7 +54,7 @@ class MyServerRequestClass extends \PHPUnit_Framework_TestCase
     {
         $request = s\Http\ServerRequestFactory::fromGlobals($_SERVER, $_GET, $_POST, $_COOKIE, $_FILES);
         $params = $request->getParams();
-        $this->assertEquals(5, count($params));
+        $this->assertEquals('5', count($params));
     }
     /**
      * @test
@@ -63,7 +64,7 @@ class MyServerRequestClass extends \PHPUnit_Framework_TestCase
         unset($_SERVER['SERVER_PROTOCOL']);
         $request = s\Http\ServerRequestFactory::fromGlobals($_SERVER, $_GET, $_POST, $_COOKIE, $_FILES);
         $params = $request->getParams();
-        $this->assertEquals(5, count($params));
+        $this->assertEquals('5', count($params));
         $_SERVER['SERVER_PROTOCOL'] = 'None';
         $this->expectException(UnexpectedValueException::class);
         s\Http\ServerRequestFactory::fromGlobals($_SERVER, $_GET, $_POST, $_COOKIE, $_FILES);

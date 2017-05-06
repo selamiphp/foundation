@@ -7,7 +7,7 @@ use Zend\Diactoros\ServerRequestFactory as DiactorosServerRequestFactory;
 
 final class ServerRequestFactory extends DiactorosServerRequestFactory
 {
-    private static function marshalProtocolVersion(array $server)
+    private static function marshalProtocolVersion(array $server) : string
     {
         if (! isset($server['SERVER_PROTOCOL'])) {
             return '1.1';
@@ -27,7 +27,8 @@ final class ServerRequestFactory extends DiactorosServerRequestFactory
         array $body = null,
         array $cookies = null,
         array $files = null
-    ) {
+    ) : ServerRequest {
+    
         $server  = parent::normalizeServer($server);
         $files   = parent::normalizeFiles($files);
         $headers = parent::marshalHeaders($server);
