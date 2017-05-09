@@ -20,7 +20,6 @@
     "selami/router": "^0.2",
     "selami/views": "^0.1",
     "mattketmo/camel": "~1.1",
-    "psr/container": "^1.0",
     "vlucas/phpdotenv": "^2.4"
   },
   "require-dev": {
