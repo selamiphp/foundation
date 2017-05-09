@@ -147,13 +147,13 @@ class Application
         $this->response->$returnFunction($functionOutput, $this->controller);
     }
 
-    public function getResponse() : void
+    public function getResponse() :string
     {
         $this->run();
         return $this->response->getResponse();
     }
 
-    public function sendResponse() : void
+    public function sendResponse() : string
     {
         $this->run();
         return $this->response->sendResponse();
