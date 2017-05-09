@@ -114,7 +114,7 @@ class Result
         $this->checkTemplateFile($template, 'Method\'s', $controller);
         $functionOutput['data'] = $functionOutput['data'] ?? [];
         $functionOutput['app_content'] = $this->view->render($template, $functionOutput['data']);
-        $mainTemplateName = $functionOutput['app_main_template'] ?? 'default';
+        $mainTemplateName = $functionOutput['layout'] ?? 'default';
         $mainTemplate = '_' . strtolower($mainTemplateName) . '.twig';
         $this->checkTemplateFile($mainTemplate, 'Main', $controller);
         $this->result['contentType'] = 'text';
