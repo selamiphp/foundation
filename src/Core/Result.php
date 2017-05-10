@@ -155,7 +155,7 @@ class Result
         }
     }
 
-    public function getResponse()
+    public function getResponse() : array
     {
         $headers = $this->config['headers'] ?? null;
         $this->setHeaders($headers);
