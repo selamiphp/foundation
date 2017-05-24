@@ -4,13 +4,14 @@ declare(strict_types=1);
 namespace Selami\Core;
 
 use Selami as s;
+use Zend\Config\Config as ZendConfig;
 use Psr\Container\ContainerInterface;
 use Selami\View\ViewInterface;
 use Symfony\Component\HttpFoundation\Session\Session;
 
 class Result
 {
-    private $config     = [];
+    private $config;
     private $container;
     private $view;
     private $session;
@@ -27,13 +28,13 @@ class Result
     public function __construct(ContainerInterface $container, Session $session)
     {
         $this->container = $container;
-        $this->config = $container->get('config');
+        $this->config = $container->get(ZendConfig::class);
         $this->session =$session;
     }
 
     private function checkTemplateFile($template, $type, $controller) : void
     {
-        if (!file_exists($this->config['templates_dir'] .'/'. $template)) {
+        if (!file_exists($this->config->app->get('templates_dir', './templates') .'/'. $template)) {
             $message  = sprintf(
                 '%s  template file not found! %s  needs a main template file at: %s',
                 $type,
@@ -74,7 +75,7 @@ class Result
 
     public function returnHtml(array $functionOutput, string $controller) : void
     {
-        $this->useView($this->container->get('view'));
+        $this->useView($this->container->get(ViewInterface::class));
         $paths = explode("\\", $controller);
         $templateFile = array_pop($paths);
         $templateFolder = array_pop($paths);
@@ -99,7 +100,7 @@ class Result
 
     public function returnText(array $functionOutput, string $controller) : void
     {
-        $this->useView($this->container->get('view'));
+        $this->useView($this->container->get(ViewInterface::class));
         $paths = explode("\\", $controller);
         $templateFile = array_pop($paths);
         $templateFolder = array_pop($paths);
@@ -168,23 +169,23 @@ class Result
         $response->setHeaders($this->result['headers']);
         $response->setStatusCode($this->result['statusCode']);
         switch ($this->result['contentType']) {
-            case 'redirect':
-                $response->setOutputType('redirect');
-                $response->setRedirect($this->result['redirect']);
-                break;
-            case 'json':
-                $response->setOutputType('json');
-                $response->setData($this->result['data']);
-                break;
-            case 'text':
-                $response->setOutputType('text');
-                $response->setBody($this->result['body']);
-                break;
-            case 'html':
-            default:
-                $response->setOutputType('html');
-                $response->setBody($this->result['body']);
-                break;
+        case 'redirect':
+            $response->setOutputType('redirect');
+            $response->setRedirect($this->result['redirect']);
+            break;
+        case 'json':
+            $response->setOutputType('json');
+            $response->setData($this->result['data']);
+            break;
+        case 'text':
+            $response->setOutputType('text');
+            $response->setBody($this->result['body']);
+            break;
+        case 'html':
+        default:
+            $response->setOutputType('html');
+            $response->setBody($this->result['body']);
+            break;
         }
         $response->send();
     }
