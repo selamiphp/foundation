@@ -9,13 +9,12 @@ declare(strict_types=1);
  */
 
 
-namespace Selami\Core;
+namespace Selami\Foundation;
 
 use Selami\Router;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use Symfony\Component\HttpFoundation\Session\Session as SymfonySession;
 use Selami\Http\Psr7Response;
 use Zend\Config\Config as ZendConfig;
 
@@ -37,31 +36,32 @@ class App
         'aliases'       => []
     ];
     */
-
+    /**
+     * @var ContainerInterface
+     */
     private $container;
+    /**
+     * @var ZendConfig
+     */
     private $config;
     /**
-     * ServerRequest
-     *
-     * @var ServerRequestInterface
+     * @var array
      */
-    private $request;
     private $route;
-    private $session;
+
+    /**
+     * @var array
+     */
     private $response;
 
     public function __construct(
         ZendConfig $config,
-        ServerRequestInterface $request,
         Router $router,
-        SymfonySession $session,
         ContainerInterface $container
     ) {
-    
-        $this->request = $request;
+
         $this->config = $config;
         $this->route = $router->getRoute();
-        $this->session = $session;
         $this->container  = $container;
     }
 
@@ -69,9 +69,7 @@ class App
     {
         return new App(
             $container->get(ZendConfig::class),
-            $container->get(ServerRequestInterface::class),
             $container->get(Router::class),
-            $container->get(SymfonySession::class),
             $container
         );
     }
@@ -81,7 +79,6 @@ class App
         ResponseInterface $response,
         callable $next = null
     ) : ResponseInterface {
-        $this->request = $request;
         $this->run();
         $psr7Response  = new Psr7Response;
         $response = $psr7Response($response, $this->response);
@@ -93,24 +90,14 @@ class App
 
     private function run() : void
     {
-        $this->startSession();
         $this->runDispatcher($this->route['route']);
     }
 
-    private function startSession() :void
-    {
-        ini_set('session.use_cookies', '1');
-        ini_set('session.use_only_cookies', '1');
-        ini_set('session.cookie_httponly', '1');
-        ini_set('session.name', 'SELAMISESSID');
-        if (!$this->session->isStarted()) {
-            $this->session->start();
-        }
-    }
+
 
     private function runDispatcher(array $route) : void
     {
-        $this->response = new Result($this->container, $this->session);
+        $this->response = new Response($this->container);
         $defaultReturnType = $this->config->app->get('default_return_type', 'html');
         switch ($route['status']) {
         case 405:
@@ -126,23 +113,16 @@ class App
         }
     }
 
-    private function runRoute(string $controller, string $returnType = 'html', ?array $args) : void
+    private function runRoute(string $controllerClass, string $returnType = 'html', ?array $args) : void
     {
-        if (!class_exists($controller)) {
-            $message = "Controller has not class name as {$controller}";
+        if (!class_exists($controllerClass)) {
+            $message = "Controller has not class name as {$controllerClass}";
             throw new \BadMethodCallException($message);
         }
-        $controllerInstance = new $controller($this->container, $args);
-        if (method_exists($controllerInstance, 'applicationLoad')) {
-            $controllerInstance->applicationLoad();
-        }
-        if (method_exists($controllerInstance, 'controllerLoad')) {
-            $controllerInstance->controllerLoad();
-        }
-        $functionOutput = $controllerInstance();
-
+        $controller = $controllerClass::factory($this->container, $args);
+        $functionOutput = $controller->respond();
         $returnFunction = 'return' . ucfirst($returnType);
-        $this->response->$returnFunction($functionOutput, $controller);
+        $this->response->$returnFunction($functionOutput, $controllerClass);
     }
 
     public function getResponse() : array
