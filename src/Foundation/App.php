@@ -22,20 +22,6 @@ use Zend\Config\Config as ZendConfig;
 class App
 {
 
-    /*
-    private $config = [
-        'base_dir'      => null,
-        'app_dir'       => '/var/lib/www/app',
-        'app_data_dir'  => '/tmp',
-        'base_url'      => null,
-        'app_namespace' => 'SelamiApp',
-        'app_name'      => 'www',
-        'default_return_type'   => 'html',
-        'template_engine'       => 'Twig',
-        'bypass_error_handlers' => true,
-        'aliases'       => []
-    ];
-    */
     /**
      * @var ContainerInterface
      */
