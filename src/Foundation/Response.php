@@ -149,7 +149,7 @@ class Response
         if ($returnType == 'json') {
             $this->body = ['status' => $status, 'message' => $message];
         } else {
-            $this->useView($this->container->get('view'));
+            $this->useView($this->container->get(ViewInterface::class));
             $notFoundTemplate = '_404.twig';
             $this->contentType = $returnType;
             $this->body = $this->view->render(

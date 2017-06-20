@@ -45,7 +45,6 @@ class App
         Router $router,
         ContainerInterface $container
     ) {
-
         $this->config = $config;
         $this->route = $router->getRoute();
         $this->container  = $container;
