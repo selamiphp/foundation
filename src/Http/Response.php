@@ -3,16 +3,21 @@ declare(strict_types=1);
 
 namespace Selami\Http;
 
+use Selami\Router;
+
 class Response
 {
+
     protected $response;
-    protected $outputType   = 'html';
-    protected $headers      = [];
-    protected $statusCode   = 200;
+    protected $outputType = Router::HTML;
+    protected $headers = [];
+    protected $statusCode = 200;
     protected $body;
     protected $redirectUri;
-    protected $version      = '1.0';
-    protected static $validOutputTypes = ['html', 'json', 'text', 'redirect'];
+    protected $downloadFileName;
+    protected $downloadFilePath;
+    protected $version = '1.0';
+    protected $customContentType;
     protected static $statusTexts = [
         100 => 'Continue',
         101 => 'Switching Protocols',
@@ -110,19 +115,52 @@ class Response
         $this->body = $body;
     }
 
+    public function setDownloadFilePath(string $filePath) : void
+    {
+        $this->downloadFilePath = $filePath;
+    }
+
+    public function setDownloadFileName(string $fileName) : void
+    {
+        $this->downloadFileName = $fileName;
+    }
+
+
+    public function getDownloadFilePath() : ?string
+    {
+        return $this->downloadFilePath;
+    }
+
+    public function getDownloadFileName() : ?string
+    {
+        return $this->downloadFileName;
+    }
+
+
+    public function setCustomContentType(string $contentType) : void
+    {
+        $this->customContentType = $contentType;
+    }
+
+
+    public function getCustomContentType() : ?string
+    {
+        return $this->customContentType;
+    }
+
     public function setData(array $body) : void
     {
         $this->body = json_encode($body);
     }
 
-    public function setOutputType(string $type) : void
+    public function setOutputType(int $type) : void
     {
-        if (in_array($type, self::$validOutputTypes, true)) {
+        if ($type >=1 && $type<=7) {
             $this->outputType = $type;
         }
     }
 
-    public function getOutputType() : string
+    public function getOutputType() : int
     {
         return $this->outputType;
     }
@@ -148,17 +186,30 @@ class Response
 
     public function sendHeaders() : void
     {
-        if ($this->outputType === 'json') {
+        if ($this->outputType === Router::JSON) {
             $this->setHeader('Content-Type', 'application/json; charset=UTF-8');
-        }
-        if ($this->outputType === 'text') {
+        } elseif ($this->outputType === Router::TEXT) {
             $this->setHeader('Content-Type', 'text/plain; charset=UTF-8');
-        }
-        if ($this->outputType === 'html') {
+        } elseif ($this->outputType === Router::XML) {
+            $this->setHeader('Content-Type', 'application/xml; charset=UTF-8');
+        } elseif ($this->outputType === Router::HTML) {
             $this->setHeader('Content-Type', 'text/html; charset=UTF-8');
+        } elseif ($this->outputType === Router::CUSTOM) {
+            $this->setHeader('Content-Type', $this->customContentType ?? 'text/plain');
+        } elseif ($this->outputType === Router::DOWNLOAD) {
+            $this->setHeader('Content-Type', 'application/octet-stream');
+            if ($this->downloadFileName !== null) {
+                $this->setHeader(
+                    'Content-Disposition',
+                    'attachment; filename="'.$this->downloadFileName.'"'
+                );
+            }
         }
+
+
+
         if (!headers_sent()) {
-            if ($this->outputType === 'redirect' && $this->redirectUri !== null) {
+            if ($this->outputType === Router::REDIRECT && $this->redirectUri !== null) {
                     header('location:' . $this->redirectUri);
                     exit;
             }
@@ -180,7 +231,15 @@ class Response
 
     public function sendContent() : void
     {
-        echo $this->body;
+        echo $this->getContent();
+    }
+
+    private function getContent()
+    {
+        if ($this->downloadFilePath !== null && file_exists($this->downloadFilePath)) {
+            return file_get_contents($this->downloadFilePath);
+        }
+        return $this->body;
     }
 
     public function send() : void

@@ -18,7 +18,6 @@ use Psr\Http\Message\ResponseInterface;
 use Selami\Http\Psr7Response;
 use Zend\Config\Config as ZendConfig;
 
-
 class App
 {
 
@@ -78,36 +77,36 @@ class App
         $this->runDispatcher($this->route['route']);
     }
 
-
-
     private function runDispatcher(array $route) : void
     {
         $this->response = new Response($this->container);
         $defaultReturnType = $this->config->app->get('default_return_type', 'html');
         switch ($route['status']) {
-        case 405:
-            $this->response->notFound(405, $defaultReturnType, 'Method Not Allowed');
-            break;
-        case 200:
-            $this->runRoute($route['controller'], $route['returnType'], $route['args']);
-            break;
-        case 404:
-        default:
-            $this->response->notFound(404, $defaultReturnType, 'Not Found');
-            break;
+            case 405:
+                $this->response->notFound(405, $defaultReturnType, 'Method Not Allowed');
+                break;
+            case 200:
+                $this->runRoute($route['controller'], $route['returnType'], $route['args']);
+                break;
+            case 404:
+            default:
+                $this->response->notFound(404, $defaultReturnType);
+                break;
         }
     }
 
-    private function runRoute(string $controllerClass, string $returnType = 'html', ?array $args) : void
+    private function runRoute(string $controllerClass, int $returnType = Response::HTML, ?array $args = null) : void
     {
         if (!class_exists($controllerClass)) {
             $message = "Controller has not class name as {$controllerClass}";
             throw new \BadMethodCallException($message);
         }
         $controller = $controllerClass::factory($this->container, $args);
-        $functionOutput = $controller->respond();
-        $returnFunction = 'return' . ucfirst($returnType);
-        $this->response->$returnFunction($functionOutput, $controllerClass);
+        $actionOutput = $controller->respond();
+        if (isset($actionOutput['meta']['type']) && $actionOutput['meta']['type'] === Dispatcher::REDIRECT) {
+            $returnType = Router::REDIRECT;
+        }
+        $this->response->setResponse($returnType, $actionOutput, $controllerClass);
     }
 
     public function getResponse() : array

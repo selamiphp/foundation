@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Selami\Foundation;
 
-use Selami as s;
+use Selami;
 use Zend\Config\Config as ZendConfig;
 use Psr\Container\ContainerInterface;
 use Selami\View\ViewInterface;
@@ -39,12 +39,15 @@ class Response
     /**
      * @var string
      */
-    private $contentType = 'html';
+    private $contentType = Selami\Router::HTML;
 
     /**
      * @var string
      */
     private $redirect;
+    private $downloadFilePath;
+    private $downloadFileName;
+    private $customContentType;
 
     public function __construct(ContainerInterface $container)
     {
@@ -65,88 +68,106 @@ class Response
         }
     }
 
-    public function returnRedirect(array $functionOutput, string $controller) : void
+    public function setResponse(int $returnType, array $actionOutput, string $controller) : void
     {
-        $this->contentType = 'redirect';
-        if (isset($functionOutput['redirect'])) {
-            $this->contentType = 'redirect';
-            $this->statusCode = 301;
-            $this->redirect = $functionOutput['redirect'];
+        switch ($returnType) {
+            case Selami\Router::HTML:
+                $this->setRenderedResponse(Selami\Router::HTML, $actionOutput, $controller);
+                break;
+            case Selami\Router::JSON:
+                $this->setJsonResponse($actionOutput);
+                break;
+            case Selami\Router::TEXT:
+                $this->setRenderedResponse(Selami\Router::TEXT, $actionOutput, $controller);
+                break;
+            case Selami\Router::XML:
+                $this->setRenderedResponse(Selami\Router::XML, $actionOutput, $controller);
+                break;
+            case Selami\Router::DOWNLOAD:
+                $this->setDownloadResponse($actionOutput);
+                break;
+            case Selami\Router::CUSTOM:
+                $this->setRenderedResponse(Selami\Router::CUSTOM, $actionOutput, $controller);
+                break;
+            case Selami\Router::REDIRECT:
+                $this->setRedirectResponse($actionOutput);
+                break;
         }
     }
 
-    public function returnJson(array $functionOutput, string $controllerClass) : void
+    public function setRedirectResponse(array $actionOutput) : void
     {
-        $this->contentType = 'json';
-        if (isset($functionOutput['redirect'])) {
-            $this->contentType = 'redirect';
-            $this->statusCode = 301;
-            $this->redirect = $functionOutput['redirect'];
+        $this->contentType = Selami\Router::REDIRECT;
+        if (isset($actionOutput['meta']['type']) && $actionOutput['meta']['type'] === Dispatcher::REDIRECT) {
+            $this->contentType = Selami\Router::REDIRECT;
+            $this->statusCode = $actionOutput['status'] ?? 302;
+            $this->redirect = $actionOutput['meta']['redirect_url'];
         }
-        if (!is_array($functionOutput)) {
-            $functionOutput = ['status' => 500, 'error' => 'Internal Server Error'];
-        } elseif (!isset($functionOutput['status'])) {
-            $functionOutput['status'] = 200;
+    }
+    
+    public function setDownloadResponse(array $actionOutput) : void
+    {
+        $this->contentType = Selami\Router::DOWNLOAD;
+        if (isset($actionOutput['meta']['type']) ?? $actionOutput['meta']['type'] === Dispatcher::DOWNLOAD) {
+            $statusCode = $actionOutput['status'] ?? 200;
+            $this->statusCode = (int) $statusCode;
+            $this->downloadFilePath = $actionOutput['meta']['download_file_path'];
+            $this->downloadFileName = $actionOutput['meta']['download_file_name'] ?? date('Ymdhis');
         }
-        $status = (int) $functionOutput['status'];
+    }
+    public function setJsonResponse(array $actionOutput) : void
+    {
+        $this->contentType = Selami\Router::JSON;
+
+        if (!is_array($actionOutput)) {
+            $actionOutput = ['status' => 500, 'error' => 'Internal Server Error'];
+        }
+        if (!isset($actionOutput['status'])) {
+            $actionOutput['status'] = 200;
+        }
+        $status = (int) $actionOutput['status'];
         $this->statusCode = $status;
-        $this->data = $functionOutput;
+        $this->data = $actionOutput;
     }
 
-    public function returnHtml(array $functionOutput, string $controllerClass) : void
+    private function setRenderedResponse(int $returnType, array $actionOutput, string $controllerClass) : void
     {
         $this->useSession();
         $this->useView($this->container->get(ViewInterface::class));
+        $this->view->addGlobal('defined', get_defined_constants(true)['user'] ?? []);
+        $this->view->addGlobal('session', $this->session->all());
+        $this->renderResponse($returnType, $actionOutput, $controllerClass);
+    }
+
+    private function renderResponse(int $returnType, array $actionOutput, string $controllerClass) : void
+    {
+
         $paths = explode("\\", $controllerClass);
         $templateFile = array_pop($paths);
         $templateFolder = array_pop($paths);
         $template = strtolower($templateFolder) . '/' . strtolower($templateFile) . '.twig';
-
-        if (isset($functionOutput['redirect'])) {
-            $this->contentType   = 'redirect';
-            $this->statusCode       = 301;
-            $this->redirect     = $functionOutput['redirect'];
-        }
-        $this->view->addGlobal('defined', get_defined_constants(true)['user'] ?? []);
-        $this->view->addGlobal('session', $this->session->all());
         $this->checkTemplateFile($template, 'Method\'s', $controllerClass);
-        $functionOutput['data'] = $functionOutput['data'] ?? [];
-        $functionOutput['app_content'] = $this->view->render($template, $functionOutput['data']);
-        $mainTemplateName = $functionOutput['app_main_template'] ?? 'default';
+        $actionOutput['data'] = $actionOutput['data'] ?? [];
+        $output = [
+            'status' => $actionOutput['status'] ?? 200,
+            'meta' => $actionOutput['meta'] ?? [],
+            'app' => null
+        ];
+        $output['app']['_content'] = $this->view->render($template, $actionOutput['data']);
+        $mainTemplateName = $actionOutput['meta']['layout'] ?? 'default';
         $mainTemplate = '_' . strtolower($mainTemplateName) . '.twig';
-        $this->checkTemplateFile($mainTemplate, 'Main', $controllerClass);
-        $this->body = $this->view->render($mainTemplate, $functionOutput);
+        $this->checkTemplateFile($mainTemplate, 'Layout', $controllerClass);
+        $this->contentType = $returnType;
+        if ($returnType === Selami\Router::CUSTOM) {
+            $this->customContentType = $actionOutput['meta']['content_type'] ?? 'plain/text';
+        }
+        $this->body = $this->view->render($mainTemplate, $output);
     }
 
 
-    public function returnText(array $functionOutput, string $controllerClass) : void
+    public function notFound($status = 404, $returnType = Selami\Router::HTML, $message = 'Not Found') : void
     {
-        $this->useSession();
-        $this->useView($this->container->get(ViewInterface::class));
-        $paths = explode("\\", $controllerClass);
-        $templateFile = array_pop($paths);
-        $templateFolder = array_pop($paths);
-        $template = strtolower($templateFolder) . '/' . strtolower($templateFile) . '.twig';
-        if (isset($functionOutput['redirect'])) {
-            $this->contentType   = 'redirect';
-            $this->statusCode       = 301;
-            $this->redirect     = $functionOutput['redirect'];
-        }
-        $this->view->addGlobal('defined', get_defined_constants(true)['user'] ?? []);
-        $this->view->addGlobal('session', $this->session->all());
-        $this->checkTemplateFile($template, 'Method\'s', $controllerClass);
-        $functionOutput['data'] = $functionOutput['data'] ?? [];
-        $functionOutput['app_content'] = $this->view->render($template, $functionOutput['data']);
-        $mainTemplateName = $functionOutput['layout'] ?? 'default';
-        $mainTemplate = '_' . strtolower($mainTemplateName) . '.twig';
-        $this->checkTemplateFile($mainTemplate, 'Main', $controllerClass);
-        $this->contentType = 'text';
-        $this->body = $this->view->render($mainTemplate, $functionOutput);
-    }
-
-    public function notFound($status = 404, $returnType = 'html', $message = 'Not Found') : void
-    {
-        if ($returnType == 'json') {
+        if ($returnType === Selami\Router::JSON) {
             $this->body = ['status' => $status, 'message' => $message];
         } else {
             $this->useView($this->container->get(ViewInterface::class));
@@ -200,27 +221,41 @@ class Response
 
     public function sendResponse() : void
     {
-        $response = new s\Http\Response();
+        $response = new Selami\Http\Response();
         $response->setHeaders($this->headers);
         $response->setStatusCode($this->statusCode);
         switch ($this->contentType) {
-        case 'redirect':
-            $response->setOutputType('redirect');
-            $response->setRedirect($this->redirect);
-            break;
-        case 'json':
-            $response->setOutputType('json');
-            $response->setData($this->data);
-            break;
-        case 'text':
-            $response->setOutputType('text');
-            $response->setBody($this->body);
-            break;
-        case 'html':
-        default:
-            $response->setOutputType('html');
-            $response->setBody($this->body);
-            break;
+            case Selami\Router::REDIRECT:
+                $response->setOutputType(Selami\Router::REDIRECT);
+                $response->setRedirect($this->redirect);
+                break;
+            case Selami\Router::CUSTOM:
+                $response->setOutputType(Selami\Router::CUSTOM);
+                $response->setCustomContentType($this->customContentType);
+                $response->setBody($this->body);
+                break;
+            case Selami\Router::DOWNLOAD:
+                $response->setOutputType(Selami\Router::DOWNLOAD);
+                $response->setDownloadFileName($this->downloadFileName);
+                $response->setDownloadFilePath($this->downloadFilePath);
+                break;
+            case Selami\Router::JSON:
+                $response->setOutputType(Selami\Router::JSON);
+                $response->setData($this->data);
+                break;
+            case Selami\Router::TEXT:
+                $response->setOutputType(Selami\Router::TEXT);
+                $response->setBody($this->body);
+                break;
+            case Selami\Router::XML:
+                $response->setOutputType(Selami\Router::XML);
+                $response->setBody($this->body);
+                break;
+            case Selami\Router::HTML:
+            default:
+                $response->setOutputType(Selami\Router::HTML);
+                $response->setBody($this->body);
+                break;
         }
         $response->send();
     }
