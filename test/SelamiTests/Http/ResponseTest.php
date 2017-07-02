@@ -3,6 +3,7 @@
 namespace tests;
 
 use Selami as s;
+use Selami\Router;
 use PHPUnit\Framework\TestCase;
 use Zend\Diactoros\Response as DiactorosResponse;
 
@@ -15,7 +16,7 @@ class MyResponseClass extends TestCase
         'body'          => '<html><body><p>Test</p></body></html>',
         'textBody'      => 'Test Text',
         'data'          => ['status' => 200, 'data' => ['health' => 'OK']],
-        'contentType'   => 'html',
+        'contentType'   => Router::HTML,
         'redirect'      => 'http://127.0.0.1:8080/redirect'
     ];
 
@@ -27,14 +28,14 @@ class MyResponseClass extends TestCase
         $response = new s\Http\Response();
         $response->setHeaders($this->response['headers']);
         $response->setStatusCode($this->response['statusCode']);
-        $response->setOutputType('html');
+        $response->setOutputType(Router::HTML);
         $response->setBody($this->response['body']);
         $this->assertArrayHasKey('X-TEST', $response->getHeaders());
         $this->assertContains('<p>Test</p>', $response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals('html', $response->getOutputType());
-        $response->setOutputType('notValidType');
-        $this->assertEquals('html', $response->getOutputType());
+        $this->assertEquals(Router::HTML, $response->getOutputType());
+        $response->setOutputType(99);
+        $this->assertEquals(Router::HTML, $response->getOutputType());
         $response->send();
         $this->expectOutputRegex('#<p>Test</p>#msi');
         $this->assertArrayHasKey('Content-Type', $response->getHeaders());
@@ -49,9 +50,9 @@ class MyResponseClass extends TestCase
         $response = new s\Http\Response();
         $response->setHeaders($this->response['headers']);
         $response->setStatusCode($this->response['statusCode']);
-        $response->setOutputType('json');
+        $response->setOutputType(Router::JSON);
         $response->setData($this->response['data']);
-        $this->assertEquals('json', $response->getOutputType());
+        $this->assertEquals(Router::JSON, $response->getOutputType());
         $output  = json_decode($response->getBody(), true);
         $this->assertEquals(JSON_ERROR_NONE, json_last_error());
         $this->assertArrayHasKey('status', $output);
@@ -72,9 +73,9 @@ class MyResponseClass extends TestCase
         $response = new s\Http\Response();
         $response->setHeaders($this->response['headers']);
         $response->setStatusCode($this->response['statusCode']);
-        $response->setOutputType('text');
+        $response->setOutputType(Router::TEXT);
         $response->setBody($this->response['textBody']);
-        $this->assertEquals('text', $response->getOutputType());
+        $this->assertEquals(ROUTER::TEXT, $response->getOutputType());
         $this->assertContains('Test', $response->getBody());
         $this->assertContains('Text', $response->getBody());
         $response->send();
@@ -91,7 +92,7 @@ class MyResponseClass extends TestCase
         $response = new s\Http\Response();
         $response->setHeaders($this->response['headers']);
         $response->setStatusCode($this->response['statusCode']);
-        $response->setOutputType('redirect');
+        $response->setOutputType(Router::REDIRECT);
         $response->setRedirect($this->response['redirect']);
         $this->assertEquals(302, $response->getStatusCode());
         $this->assertEquals('http://127.0.0.1:8080/redirect', $response->getRedirectUri());
@@ -110,7 +111,7 @@ class MyResponseClass extends TestCase
         $psr7Response  = new s\Http\PSR7Response;
         $response = $psr7Response(new DiactorosResponse(), $this->response);
         $this->assertInstanceOf(DiactorosResponse::class, $response);
-        $this->response['contentType']='json';
+        $this->response['contentType']=Router::JSON;
         $psr7Response  = new s\Http\PSR7Response;
         $response = $psr7Response(new DiactorosResponse(), $this->response);
         $this->assertInstanceOf(DiactorosResponse::class, $response);
