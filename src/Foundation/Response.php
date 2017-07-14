@@ -7,6 +7,7 @@ use Selami;
 use Zend\Config\Config as ZendConfig;
 use Psr\Container\ContainerInterface;
 use Selami\View\ViewInterface;
+use Selami\Stdlib\CaseConverter;
 use Symfony\Component\HttpFoundation\Session\Session;
 
 class Response
@@ -115,6 +116,7 @@ class Response
             $this->downloadFileName = $actionOutput['meta']['download_file_name'] ?? date('Ymdhis');
         }
     }
+
     public function setJsonResponse(array $actionOutput) : void
     {
         $this->contentType = Selami\Router::JSON;
@@ -145,7 +147,7 @@ class Response
         $paths = explode("\\", $controllerClass);
         $templateFile = array_pop($paths);
         $templateFolder = array_pop($paths);
-        $template = strtolower($templateFolder) . '/' . strtolower($templateFile) . '.twig';
+        $template = CaseConverter::toSnakeCase($templateFolder) . '/' . CaseConverter::toSnakeCase($templateFile) . '.twig';
         $this->checkTemplateFile($template, 'Method\'s', $controllerClass);
         $actionOutput['data'] = $actionOutput['data'] ?? [];
         $output = [
@@ -155,7 +157,7 @@ class Response
         ];
         $output['app']['_content'] = $this->view->render($template, $actionOutput['data']);
         $mainTemplateName = $actionOutput['meta']['layout'] ?? 'default';
-        $mainTemplate = '_' . strtolower($mainTemplateName) . '.twig';
+        $mainTemplate = '_' . CaseConverter::toSnakeCase($mainTemplateName) . '.twig';
         $this->checkTemplateFile($mainTemplate, 'Layout', $controllerClass);
         $this->contentType = $returnType;
         if ($returnType === Selami\Router::CUSTOM) {
@@ -163,7 +165,6 @@ class Response
         }
         $this->body = $this->view->render($mainTemplate, $output);
     }
-
 
     public function notFound($status = 404, $returnType = Selami\Router::HTML, $message = 'Not Found') : void
     {

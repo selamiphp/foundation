@@ -95,18 +95,14 @@ class App
         }
     }
 
-    private function runRoute(string $controllerClass, int $returnType = Response::HTML, ?array $args = null) : void
+    private function runRoute($controller, int $returnType = Response::HTML, ?array $args = null) : void
     {
-        if (!class_exists($controllerClass)) {
-            $message = "Controller has not class name as {$controllerClass}";
-            throw new \BadMethodCallException($message);
-        }
-        $controller = $controllerClass::factory($this->container, $args);
-        $actionOutput = $controller->respond();
-        if (isset($actionOutput['meta']['type']) && $actionOutput['meta']['type'] === Dispatcher::REDIRECT) {
-            $returnType = Router::REDIRECT;
-        }
-        $this->response->setResponse($returnType, $actionOutput, $controllerClass);
+        $controller = new Controller($this->container, $controller, $returnType, $args);
+        $this->response->setResponse(
+            $controller->getReturnType(),
+            $controller->getActionOutput(),
+            $controller->getControllerClass()
+        );
     }
 
     public function getResponse() : array
