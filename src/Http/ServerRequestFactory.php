@@ -30,7 +30,6 @@ final class ServerRequestFactory extends DiactorosServerRequestFactory
         array $cookies = null,
         array $files = null
     ) : ServerRequest {
-    
         $server  = parent::normalizeServer($server);
         $files   = parent::normalizeFiles($files);
         $headers = parent::marshalHeaders($server);

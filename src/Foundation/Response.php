@@ -143,7 +143,6 @@ class Response
 
     private function renderResponse(int $returnType, array $actionOutput, string $controllerClass) : void
     {
-
         $paths = explode("\\", $controllerClass);
         $templateFile = array_pop($paths);
         $templateFolder = array_pop($paths);

@@ -11,8 +11,8 @@ final class ServerRequest extends DiactorosServerRequest implements Selami\Inter
     public function getParam(string $key, $default = null) : ?string
     {
         $postParams = $this->getParsedBody();
-        $getParams  = $this->getQueryParams();
-        $return     = $default;
+        $getParams = $this->getQueryParams();
+        $return = $default;
         if (is_array($postParams) && array_key_exists($key, $postParams)) {
             $return = $postParams[$key];
         } elseif (is_object($postParams) && property_exists($postParams, $key)) {
@@ -25,7 +25,7 @@ final class ServerRequest extends DiactorosServerRequest implements Selami\Inter
 
     public function getParams() : array
     {
-        $params     = $this->getQueryParams();
+        $params = $this->getQueryParams();
         $postParams = $this->getParsedBody();
         if ($postParams) {
             $params = array_merge($params, (array)$postParams);

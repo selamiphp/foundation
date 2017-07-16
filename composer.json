@@ -17,7 +17,7 @@
     "psr/container": "^1.0",
     "selami/stdlib": "^1.2",
     "selami/router": "^0.6",
-    "selami/views": "^0.4",
+    "selami/views": "~0.4",
     "zendframework/zend-diactoros": "^1.3",
     "zendframework/zend-servicemanager": "^3.0",
     "zendframework/zend-config": "^3.1"
@@ -31,7 +31,9 @@
   },
   "autoload": {
     "psr-4": {
-      "Selami\\": "src/"
+      "Selami\\Foundation\\": "src/Foundation",
+      "Selami\\Http\\": "src/Http",
+      "Selami\\Interfaces\\": "src/Interfaces"
     }
   },
   "autoload-dev": {
