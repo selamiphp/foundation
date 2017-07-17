@@ -6,9 +6,9 @@ namespace Selami\Http;
 use Selami;
 use Zend\Diactoros\ServerRequest as DiactorosServerRequest;
 
-final class ServerRequest extends DiactorosServerRequest implements Selami\Interfaces\ServerRequestInterface
+final class ServerRequest extends DiactorosServerRequest
 {
-    public function getParam(string $key, $default = null) : ?string
+    public function getParam(string $key, $default = null)
     {
         $postParams = $this->getParsedBody();
         $getParams = $this->getQueryParams();
