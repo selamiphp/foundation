@@ -16,7 +16,6 @@ use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Selami\Http\Psr7Response;
-use Zend\Config\Config as ZendConfig;
 
 class App
 {
@@ -26,7 +25,7 @@ class App
      */
     private $container;
     /**
-     * @var ZendConfig
+     * @var array
      */
     private $config;
     /**
