@@ -77,7 +77,7 @@ class Controller
     private function getArgument(string $argumentName, string $argumentType)
     {
         if ($argumentType === Resolver::ARRAY) {
-            return $this->{$argumentName};
+            return $this->container->has($argumentName) ? $this->container->get($argumentName) :  $this->{$argumentName};
         }
         return $this->container->get($argumentType);
     }

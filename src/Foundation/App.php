@@ -40,7 +40,7 @@ class App
     private $response;
 
     public function __construct(
-        ZendConfig $config,
+        array $config,
         Router $router,
         ContainerInterface $container
     ) {
@@ -52,7 +52,7 @@ class App
     public static function selamiApplicationFactory(ContainerInterface $container) : App
     {
         return new App(
-            $container->get(ZendConfig::class),
+            $container->get('config'),
             $container->get(Router::class),
             $container
         );
@@ -80,7 +80,7 @@ class App
     private function runDispatcher(array $route) : void
     {
         $this->response = new Response($this->container);
-        $defaultReturnType = $this->config->app->get('default_return_type', 'html');
+        $defaultReturnType = $this->config['app']['default_return_type'] ?? Router::HTML;
         switch ($route['status']) {
             case 405:
                 $this->response->notFound(405, $defaultReturnType, 'Method Not Allowed');

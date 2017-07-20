@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace Selami\Foundation;
 
 use Selami;
-use Zend\Config\Config as ZendConfig;
 use Psr\Container\ContainerInterface;
 use Selami\View\ViewInterface;
 use Selami\Stdlib\CaseConverter;
@@ -53,12 +52,12 @@ class Response
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
-        $this->config = $container->get(ZendConfig::class);
+        $this->config = $container->get('config');
     }
 
     private function checkTemplateFile($template, $type, $controller) : void
     {
-        if (!file_exists($this->config->app->get('templates_dir', './templates') .'/'. $template)) {
+        if (!file_exists($this->config['app']['templates_path'] .'/'. $template)) {
             $message  = sprintf(
                 '%s  template file not found! %s  needs a main template file at: %s',
                 $type,
