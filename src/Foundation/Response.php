@@ -145,7 +145,8 @@ class Response
         $paths = explode("\\", $controllerClass);
         $templateFile = array_pop($paths);
         $templateFolder = array_pop($paths);
-        $template = CaseConverter::toSnakeCase($templateFolder) . '/' . CaseConverter::toSnakeCase($templateFile) . '.twig';
+        $template = CaseConverter::toSnakeCase($templateFolder)
+            . '/' . CaseConverter::toSnakeCase($templateFile) . '.twig';
         $this->checkTemplateFile($template, 'Method\'s', $controllerClass);
         $actionOutput['data'] = $actionOutput['data'] ?? [];
         $output = [

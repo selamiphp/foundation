@@ -29,8 +29,11 @@ class Controller
      */
     public function __construct(
         ContainerInterface $container,
-        string $controller, int $returnType = Response::HTML, ?array $args = null)
-    {
+        string $controller,
+        int $returnType = Response::HTML,
+        ?array $args = null
+    ) {
+    
         $this->container = $container;
         $this->controller = $controller;
         $this->returnType = $returnType;
@@ -63,13 +66,15 @@ class Controller
         }
         $controllerConstructorArguments = Resolver::getParameterHints($this->controllerClass, '__construct');
         $arguments = [];
-        foreach ($controllerConstructorArguments as $argumentName =>$argumentType) {
+        foreach ($controllerConstructorArguments as $argumentName => $argumentType) {
             $arguments[] = $this->getArgument($argumentName, $argumentType);
         }
         $reflectionClass = new ReflectionClass($this->controllerClass);
         $controller = $reflectionClass->newInstanceArgs($arguments);
         $this->actionOutput = $controller->__invoke();
-        if (isset($this->actionOutput['meta']['type']) && $this->actionOutput['meta']['type'] === Dispatcher::REDIRECT) {
+        if (isset($this->actionOutput['meta']['type'])
+            && $this->actionOutput['meta']['type'] === Dispatcher::REDIRECT
+        ) {
             $this->returnType = Router::REDIRECT;
         }
     }
@@ -77,9 +82,9 @@ class Controller
     private function getArgument(string $argumentName, string $argumentType)
     {
         if ($argumentType === Resolver::ARRAY) {
-            return $this->container->has($argumentName) ? $this->container->get($argumentName) :  $this->{$argumentName};
+            return $this->container->has($argumentName) ?
+                $this->container->get($argumentName) :  $this->{$argumentName};
         }
         return $this->container->get($argumentType);
     }
-
 }
