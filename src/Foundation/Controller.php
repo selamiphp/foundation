@@ -7,6 +7,7 @@ use Psr\Container\ContainerInterface;
 use Selami\Stdlib\Resolver;
 use ReflectionClass;
 use BadMethodCallException;
+use Selami\Router;
 
 class Controller
 {
