@@ -64,7 +64,7 @@ class App
     ) : ResponseInterface {
         $this->run();
         $psr7Response  = new Psr7Response;
-        $response = $psr7Response($response, $this->response);
+        $response = $psr7Response($response, $this->response->getResponse());
         if ($next !== null) {
             $response  = $next($request, $response);
         }
