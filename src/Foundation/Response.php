@@ -75,6 +75,7 @@ class Response
                 $this->setRenderedResponse(Selami\Router::HTML, $actionOutput, $controller);
                 break;
             case Selami\Router::JSON:
+                $this->headers['Content-Type'] = 'application/json';
                 $this->setJsonResponse($actionOutput);
                 break;
             case Selami\Router::TEXT:
@@ -104,7 +105,7 @@ class Response
             $this->redirect = $actionOutput['meta']['redirect_url'];
         }
     }
-    
+
     public function setDownloadResponse(array $actionOutput) : void
     {
         $this->contentType = Selami\Router::DOWNLOAD;
@@ -129,6 +130,7 @@ class Response
         $status = (int) $actionOutput['status'];
         $this->statusCode = $status;
         $this->data = $actionOutput;
+        $this->body = json_encode($actionOutput);
     }
 
     private function setRenderedResponse(int $returnType, array $actionOutput, string $controllerClass) : void
