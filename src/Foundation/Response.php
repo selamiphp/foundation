@@ -210,6 +210,9 @@ class Response
     {
         $headers = $this->config['headers'] ?? null;
         $this->setHeaders($headers);
+        if ($this->redirect !== null) {
+            $this->headers['Location'] = $this->redirect;
+        }
         return [
             'statusCode'    => $this->statusCode,
             'headers'       => $this->headers,
