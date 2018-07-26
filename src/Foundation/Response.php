@@ -120,15 +120,13 @@ class Response
     public function setJsonResponse(array $actionOutput) : void
     {
         $this->contentType = Selami\Router::JSON;
-
         if (!is_array($actionOutput)) {
             $actionOutput = ['status' => 500, 'error' => 'Internal Server Error'];
         }
         if (!isset($actionOutput['status'])) {
             $actionOutput['status'] = 200;
         }
-        $status = (int) $actionOutput['status'];
-        $this->statusCode = $status;
+        $this->statusCode = (int) $actionOutput['status'];
         $this->data = $actionOutput;
         $this->body = json_encode($actionOutput);
     }
