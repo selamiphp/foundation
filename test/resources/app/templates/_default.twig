@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>Selami</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body{
+            font-family: "Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif;
+            font-size: 1rem;
+        }
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 400;
+        }
+        h3 {
+            font-size: 1rem;
+            font-weight: 400;
+        }
+    </style>
+</head>
+
+<body >
+
+<header style="margin-top:200px;text-align: center">
+    <p><img src="{{ siteUrl() }}/logo.png" style="display:inline-block"></p>
+    <h1>Selami</h1>
+    <h3>Yet another no-framework framework!</h3>
+    <p style="margin-top:40px;border-top:1px solid #f7f7f7;padding-top:20px;">
+        {% block content %}{% endblock %}
+    </p>
+</header>
+
+
+
+
+<footer style="position: fixed;left:0;right:0;bottom:0;height:80px;border-top:1px solid #f0f0f0;background-color:#fcfcfc">
+
+    <div class="container" style="padding-top:20px;margin:0 auto;width:1024px; font-size:0.8rem;">
+        <p style="float:left"><a href="{{ siteUrl() }}">Home</a>
+        <a href="{{ siteUrl() }}/category/my-category">Category</a>
+        <a href="{{ siteUrl() }}/2019/01/happy-new-year">JSON</a>
+        <a href="{{ siteUrl() }}/text">Text</a>
+        <a href="{{ siteUrl() }}/custom">Custom</a>
+        <a href="{{ siteUrl() }}/redirect">Redirect</a>
+            <a href="{{ siteUrl() }}/download">Download</a>
+            <a href="{{ siteUrl() }}/404">404</a>
+            <a href="{{ siteUrl() }}/405">405</a>
+        </p>
+        <p style="float:right">
+        <a rel="no-follow" href="http://creativecommons.org/licenses/by/4.0/" target="_blank"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/80x15.png" /></a>
+        This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>
+        </p>
+
+
+    </div>
+</footer>
+</body>
+</html>
