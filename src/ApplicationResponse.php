@@ -15,6 +15,7 @@ use Zend\Diactoros\Response\TextResponse;
 use Zend\Diactoros\Response\RedirectResponse;
 use Zend\Diactoros\Response\EmptyResponse;
 use Zend\Diactoros\Response\XmlResponse;
+use Zend\Diactoros\Stream;
 
 class ApplicationResponse
 {
@@ -68,11 +69,16 @@ class ApplicationResponse
                 );
                 break;
             case Router::DOWNLOAD:
-                $stream = $this->controllerResponse->getMetaData()['stream']->read();
-                return (new EmptyResponse(
+                $metaData = $this->controllerResponse->getMetaData();
+                /**
+                 * @var $stream Stream
+                 */
+                $stream = $metaData['stream'];
+                return new Response(
+                    $stream,
                     $this->controllerResponse->getStatusCode(),
                     $this->controllerResponse->getHeaders()
-                ))->withBody($stream);
+                );
                 break;
             case Router::REDIRECT:
                 return new RedirectResponse(

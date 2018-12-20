@@ -63,7 +63,7 @@ final class ControllerResponse
     public static function DOWNLOAD(int $statusCode, string $filePath, ?string $fileName = null) : self
     {
 
-        $stream = new Stream(realpath($filePath), 'br');
+        $stream = new Stream(realpath($filePath), 'r');
         $headers = [
             'Content-Type' => (new finfo(FILEINFO_MIME))->file($filePath),
             'Content-Disposition' => 'attachment; filename=' . $fileName ?? basename($filePath),
