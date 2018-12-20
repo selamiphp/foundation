@@ -5,6 +5,7 @@ namespace tests;
 use Selami as s;
 use Zend\Diactoros\Response as DiactorosResponse;
 use PHPUnit\Framework\TestCase;
+
 class TestPsr7Response extends TestCase
 {
     private $response   = [
