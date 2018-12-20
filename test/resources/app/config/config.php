@@ -17,7 +17,7 @@ if (is_file($cachedConfigFile)) {
         $config = ArrayUtils::merge($config, include $file);
     }
     // Cache config if enabled
-    if (isset($config['config_cache_enabled']) && $config['config_cache_enabled'] === true) {
+    if (isset($config['app']['config_cache_enabled']) && $config['app']['config_cache_enabled'] === true) {
         file_put_contents($cachedConfigFile, json_encode($config));
     }
 }

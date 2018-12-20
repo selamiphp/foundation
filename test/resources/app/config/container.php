@@ -34,8 +34,8 @@ $container->setService(Router::class, require __DIR__ . '/routes.php');
 $container->setFactory(
     TwigEnvironment::class,
     function () use ($config) {
-        $loader = new Twig\Loader\FilesystemLoader($config['app']['templates_path']);
-        return new TwigEnvironment($loader, $config['app']);
+        $loader = new Twig\Loader\FilesystemLoader($config['view']['templates_path']);
+        return new TwigEnvironment($loader, $config['view']['twig']);
     }
 );
 
@@ -45,7 +45,6 @@ $container->setFactory(
     function ($container) use ($config, $request) {
 
         $viewConfig = $config['view'];
-        $viewConfig['templates_path'] = $config['app']['templates_path'];
         $viewConfig['runtime']['query_parameters'] =  $request->getQueryParams();
         $viewConfig['runtime']['base_url'] =  $config['app']['base_url'];
         $viewConfig['runtime']['config'] = $config;

@@ -111,7 +111,7 @@ class ApplicationResponse
         $template = CaseConverter::toSnakeCase($templateFolder)
             . '/' . CaseConverter::toSnakeCase($templateFile);
         $layout = $this->controllerResponse->getMetaData()['layout'] ?? $template;
-        $templatePath = $layout. '.twig';
+        $templatePath = $layout. '.' . $this->config->view->get('template_file_extension');
 
         $this->checkTemplateFile($templatePath, 'Method\'s', $this->controllerClass);
         return $this->view->render($templatePath, $this->controllerResponse->getData());
@@ -119,7 +119,7 @@ class ApplicationResponse
 
     private function checkTemplateFile($template, $type, $controller) : void
     {
-        if (!file_exists($this->config->app->get('templates_path') .'/'. $template)) {
+        if (!file_exists($this->config->view->get('templates_path') .'/'. $template)) {
             $message  = sprintf(
                 '%s  template file not found! %s  needs a main template file at: %s',
                 $type,

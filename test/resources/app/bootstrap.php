@@ -25,7 +25,7 @@ $serverRequestFactory = [ServerRequestFactory::class, 'fromGlobals'];
 $stack = new EmitterStack();
 $stack->push(new SapiEmitter());
 
-$myApp = Selami\Application::createWithContainer($container);
+$myApp = Selami\Application::createWithContainer($container, 'selami-example-app');
 
 $runner = new RequestHandlerRunner(
     $myApp,

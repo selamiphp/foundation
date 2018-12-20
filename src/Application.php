@@ -16,6 +16,7 @@ use Zend\Config\Config;
 class Application implements RequestHandlerInterface
 {
 
+    private $id;
     /**
      * @var ContainerInterface
      */
@@ -40,18 +41,21 @@ class Application implements RequestHandlerInterface
     private $request;
 
     public function __construct(
+        string $id,
         ContainerInterface $container,
         Router $router,
         Config $config
     ) {
+        $this->id = $id;
         $this->config = $config;
         $this->router = $router;
         $this->container  = $container;
     }
 
-    public static function createWithContainer(ContainerInterface $container) : self
+    public static function createWithContainer(ContainerInterface $container, ?string $id = 'selami-app') : self
     {
         return new self(
+            $id,
             $container,
             $container->get(Router::class),
             $container->get(Config::class)
@@ -112,8 +116,8 @@ class Application implements RequestHandlerInterface
         $this->router = $this->router
             ->withDefaultReturnType($this->config->app->get('default_return_type', Router::HTML))
             ->withSubFolder($this->config->app->get('app_sub_folder', ''));
-        $cacheFile = $this->config->app->get('route_cache_file', null);
-        if ($cacheFile !== null) {
+        $cacheFile = $this->config->app->get('router_cache_file-' . $this->id, null);
+        if ((bool) $cacheFile) {
             $this->router = $this->router
                 ->withCacheFile($cacheFile);
         }
