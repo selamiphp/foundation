@@ -117,11 +117,11 @@ class Application implements RequestHandlerInterface
             $this->router = $this->router
                 ->withCacheFile($cacheFile);
         }
-        $this->getRouter($this->config->routes);
+        $this->addRoutes($this->config->routes);
         return $this->router->getRoute();
     }
 
-    private function getRouter($routes) : void
+    private function addRoutes($routes) : void
     {
         foreach ($routes as $route) {
             $this->router->add($route[0], $route[1], $route[2], $route[3], $route[4] ?? '');
