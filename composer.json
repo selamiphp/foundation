@@ -48,9 +48,9 @@
   },
   "scripts": {
     "unit-tests": "vendor/bin/phpunit --coverage-clover ./build/logs/clover.xml --configuration ./phpunit.xml",
-    "phpstan": "vendor/bin/phpstan analyse -l 7 src app",
-    "phpstan-test": "vendor/bin/phpstan analyse -l 7 -c phpstan.test.neon test",
-    "phpcs": "vendor/bin/phpcs --standard=PSR2 src test app/Contents",
-    "phpcbf": "vendor/bin/phpcbf --standard=PSR2 src test app/Contents"
+    "phpstan": "vendor/bin/phpstan analyse -l 7 src test/resources/app",
+    "phpstan-test": "vendor/bin/phpstan analyse -l 7 -c phpstan.test.neon test/SelamiTests",
+    "phpcs": "vendor/bin/phpcs --standard=PSR2 src test test/resources/app/Contents",
+    "phpcbf": "vendor/bin/phpcbf --standard=PSR2 src test test/resources/app/Contents"
   }
 }
