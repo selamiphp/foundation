@@ -10,7 +10,6 @@ use Psr\Http\Server\RequestHandlerInterface;
 use Selami\Router\Route;
 use Selami\Router\Router;
 use Selami\View\ViewInterface;
-use Zend\Diactoros\Response;
 use Zend\Config\Config;
 
 class Application implements RequestHandlerInterface
@@ -31,7 +30,7 @@ class Application implements RequestHandlerInterface
     private $router;
 
     /**
-     * @var array
+     * @var ApplicationResponse
      */
     private $response;
 
@@ -66,7 +65,7 @@ class Application implements RequestHandlerInterface
     {
         $this->request = $request;
         $this->run();
-        return $this->response->returnResponse(new Response());
+        return $this->response->returnResponse();
     }
 
     public function __invoke(ServerRequestInterface $request, ResponseInterface $response, callable $next = null)
@@ -74,7 +73,7 @@ class Application implements RequestHandlerInterface
     {
         $this->request = $request;
         $this->run();
-        return $this->response->returnResponse($response);
+        return $this->response->returnResponse();
     }
 
     private function run() : void
@@ -114,7 +113,6 @@ class Application implements RequestHandlerInterface
     private function getRoute() : Route
     {
         $this->router = $this->router
-            ->withDefaultReturnType($this->config->app->get('default_return_type', Router::HTML))
             ->withSubFolder($this->config->app->get('app_sub_folder', ''));
         $cacheFile = $this->config->app->get('router_cache_file-' . $this->id, null);
         if ((bool) $cacheFile) {
