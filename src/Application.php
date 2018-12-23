@@ -87,7 +87,6 @@ class Application implements RequestHandlerInterface
             case 200:
                 $this->runRoute(
                     $route->getController(),
-                    $route->getReturnType(),
                     $route->getUriParameters()
                 );
                 break;
@@ -130,9 +129,9 @@ class Application implements RequestHandlerInterface
         }
     }
 
-    private function runRoute($controllerClass, int $returnType, array $args) : void
+    private function runRoute($controllerClass, array $args) : void
     {
-        $controller = new ApplicationController($this->container, $controllerClass, $returnType, $args);
+        $controller = new ApplicationController($this->container, $controllerClass, $args);
         $this->response = new ApplicationResponse(
             $controllerClass,
             $controller->getControllerResponse(),

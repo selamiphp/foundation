@@ -13,18 +13,15 @@ class ApplicationController
     private $container;
     private $controller;
     private $controllerClass;
-    private $returnType;
     private $uriParameters;
 
     public function __construct(
         ContainerInterface $container,
         string $controller,
-        int $returnType = Router::HTML,
         ?array $uriParameters = []
     ) {
         $this->container = $container;
         $this->controller = $controller;
-        $this->returnType = $returnType;
         $this->uriParameters = $uriParameters;
     }
 
