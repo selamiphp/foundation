@@ -51,6 +51,7 @@
     "phpstan": "vendor/bin/phpstan analyse -l 7 src test/resources/app",
     "phpstan-test": "vendor/bin/phpstan analyse -l 7 -c phpstan.test.neon test/SelamiTests",
     "phpcs": "vendor/bin/phpcs --standard=PSR2 src test test/resources/app/Contents",
-    "phpcbf": "vendor/bin/phpcbf --standard=PSR2 src test test/resources/app/Contents"
+    "phpcbf": "vendor/bin/phpcbf --standard=PSR2 src test test/resources/app/Contents",
+    "clear-test-cache-files": "rm -rf test/resources/app/cache/*"
   }
 }
