@@ -15,8 +15,6 @@ final class ControllerResponse
     private $statusCode;
     private $metaData;
 
-
-
     public function __construct(int $returnType, int $statusCode, array $headers, array $data, array $metaData)
     {
         $this->returnType = $returnType;
@@ -30,6 +28,7 @@ final class ControllerResponse
     {
         return new self(Router::CUSTOM, $statusCode, $headers, $data, $metaData);
     }
+
     public static function EMPTY(int $statusCode, array $data, array $metaData, array $headers) : self
     {
         return new self(Router::EMPTY, $statusCode, $headers, $data, $metaData);
@@ -62,7 +61,6 @@ final class ControllerResponse
 
     public static function DOWNLOAD(int $statusCode, string $filePath, ?string $fileName = null) : self
     {
-
         $stream = new Stream(realpath($filePath), 'r');
         $headers = [
             'Content-Type' => (new finfo(FILEINFO_MIME))->file($filePath),

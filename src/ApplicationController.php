@@ -15,7 +15,6 @@ class ApplicationController
     private $controllerClass;
     private $returnType;
     private $uriParameters;
-    private $actionOutput;
 
     public function __construct(
         ContainerInterface $container,
@@ -29,20 +28,6 @@ class ApplicationController
         $this->uriParameters = $uriParameters;
     }
 
-    public function getControllerClass() : string
-    {
-        return $this->controllerClass;
-    }
-
-    public function getActionOutput() : array
-    {
-        return $this->actionOutput;
-    }
-
-    public function getReturnType() : int
-    {
-        return $this->returnType;
-    }
 
     public function getUriParameters() : array
     {

@@ -15,7 +15,7 @@ use Zend\Diactoros\Response;
 use Zend\Diactoros\ServerRequest;
 use Zend\Stratigility\Middleware\ErrorResponseGenerator;
 
-$errorResponseGenerator = function (\Throwable $e) {
+$errorResponseGenerator = function (Throwable $e) {
     $generator = new ErrorResponseGenerator();
     return $generator($e, new ServerRequest(), new Response());
 };
