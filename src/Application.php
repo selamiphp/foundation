@@ -41,6 +41,7 @@ class Application implements RequestHandlerInterface
     private $requestedMethod;
     private $requestedPath;
     private $route;
+    private $environment = 'dev';
 
     public function __construct(
         string $id,
@@ -52,6 +53,7 @@ class Application implements RequestHandlerInterface
         $this->config = $config;
         $this->router = $router;
         $this->container  = $container;
+        $this->environment = $this->config->get('app')->get('environment', 'dev');
     }
 
     public static function createWithContainer(ContainerInterface $container, ?string $id = 'selami-app') : self
@@ -116,14 +118,17 @@ class Application implements RequestHandlerInterface
 
     private function getRoute() : Route
     {
+        $appConfig = $this->config->get('app');
         $this->router = $this->router
-            ->withSubFolder($this->config->app->get('app_sub_folder', ''));
-        $cacheFile = $this->config->app->get('router_cache_file-' . $this->id, null);
-        if ((bool) $cacheFile) {
+            ->withSubFolder($appConfig->get('app_sub_folder', ''));
+        if ($this->environment  === 'prod'
+            || $appConfig->get('router_cache_enabled', false) === true
+        ) {
+            $cacheFile = $appConfig->get('cache_dir').'/'.$this->id.'.fastroute.cache';
             $this->router = $this->router
                 ->withCacheFile($cacheFile);
         }
-        $this->addRoutes($this->config->routes);
+        $this->addRoutes($this->config->get('routes'));
         return $this->route ?? $this->router->getRoute();
     }
 

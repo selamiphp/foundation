@@ -36,6 +36,7 @@
     "zendframework/zend-stdlib": "^3.2",
     "zendframework/zend-stratigility": "^3.0",
     "zendframework/zend-httphandlerrunner": "^1.0",
+    "vlucas/phpdotenv": "^2.5",
 
     "twig/twig": "^2.6",
     "twig/extensions": "^1.5"

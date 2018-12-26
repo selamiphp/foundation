@@ -3,7 +3,8 @@ declare(strict_types=1);
 
 chdir(__DIR__);
 require '../../../vendor/autoload.php';
-
+$dotenv = new Dotenv\Dotenv(__DIR__);
+$dotenv->load();
 $container = include './config/container.php';
 
 use Zend\HttpHandlerRunner\Emitter\EmitterStack;
@@ -25,7 +26,7 @@ $serverRequestFactory = [ServerRequestFactory::class, 'fromGlobals'];
 $stack = new EmitterStack();
 $stack->push(new SapiEmitter());
 
-$myApp = Selami\Application::createWithContainer($container, 'selami-example-app');
+$myApp = Selami\Application::createWithContainer($container, 'selami');
 
 $runner = new RequestHandlerRunner(
     $myApp,

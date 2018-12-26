@@ -4,9 +4,9 @@ declare(strict_types=1);
 namespace MyApp;
 
 use Selami\ControllerResponse;
-use Selami\Interfaces\Controller;
+use Selami\Interfaces\ApplicationController;
 
-class ErrorHandler implements Controller
+class ErrorHandler implements ApplicationController
 {
     private $status;
     private $message;
