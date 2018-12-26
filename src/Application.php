@@ -41,7 +41,7 @@ class Application implements RequestHandlerInterface
     private $requestedMethod;
     private $requestedPath;
     private $route;
-    private $environment = 'dev';
+    private $environment;
 
     public function __construct(
         string $id,
