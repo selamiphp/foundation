@@ -29,7 +29,7 @@ $container->setFactory(SessionInterface::class, function () {
     return new Session($sessionStorage);
 });
 $container->setService(ServerRequestInterface::class, $request);
-$container->setService(Router::class, require __DIR__ . '/routes.php');
+$container->setService(Router::class, require __DIR__ . '/router.php');
 
 $container->setFactory(
     TwigEnvironment::class,
