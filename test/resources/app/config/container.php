@@ -21,9 +21,6 @@ if (PHP_SAPI !== 'cli') {
 }
 
 $container->setService(Config::class, new Config($config));
-$container->setService('http-error-handler', MyApp\ErrorHandler::class);
-$container->setService('http_error_handler', 'Deneme');
-
 $container->setFactory(SessionInterface::class, function () {
     $sessionStorage = new NativeSessionStorage(array(), new NativeFileSessionHandler());
     return new Session($sessionStorage);

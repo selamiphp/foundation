@@ -12,6 +12,7 @@ use Selami\Router\Router;
 use Selami\View\ViewInterface;
 use Zend\Config\Config;
 
+
 class Application implements RequestHandlerInterface
 {
 
@@ -106,7 +107,7 @@ class Application implements RequestHandlerInterface
 
     private function notFound($status, $message) : void
     {
-        $errorHandlerClass = $this->container->get('http-error-handler');
+        $errorHandlerClass = $this->config->get('app')->get('http-error-handler');
         $errorHandler = new $errorHandlerClass($status, $message);
         $this->response = new ApplicationResponse(
             $errorHandlerClass,
