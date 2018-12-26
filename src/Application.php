@@ -74,7 +74,7 @@ class Application implements RequestHandlerInterface
         return $this->response->returnResponse();
     }
 
-    public function __invoke(ServerRequestInterface $request, ResponseInterface $response, callable $next = null)
+    public function __invoke(ServerRequestInterface $request, ResponseInterface $response)
     : ResponseInterface
     {
         $this->request = $request;
