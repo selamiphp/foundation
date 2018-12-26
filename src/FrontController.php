@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Selami;
 
 use Psr\Container\ContainerInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Selami\Stdlib\Resolver;
 use ReflectionClass;
 
@@ -13,12 +14,15 @@ class FrontController
     private $controller;
     private $controllerClass;
     private $uriParameters;
+    private $request;
 
     public function __construct(
         ContainerInterface $container,
+        ServerRequestInterface $request,
         string $controller,
         ?array $uriParameters = []
     ) {
+        $this->request = $request;
         $this->container = $container;
         $this->controller = $controller;
         $this->uriParameters = $uriParameters;
@@ -38,7 +42,6 @@ class FrontController
             $arguments[] = $this->getArgument($argumentName, $argumentType);
         }
         $controllerClass = new ReflectionClass($this->controllerClass);
-
         /**
          * @var $controllerObject \Selami\Interfaces\ApplicationController
          */
@@ -48,6 +51,9 @@ class FrontController
 
     private function getArgument(string $argumentName, string $argumentType)
     {
+        if ($argumentType === ServerRequestInterface::class) {
+            return $this->request;
+        }
         if ($argumentType === Resolver::ARRAY && $argumentName === 'uriParameters') {
             return $this->getUriParameters();
         }

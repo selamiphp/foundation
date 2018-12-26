@@ -146,7 +146,7 @@ class Application implements RequestHandlerInterface
 
     private function runController($controllerClass, array $args) : void
     {
-        $controller = new FrontController($this->container, $controllerClass, $args);
+        $controller = new FrontController($this->container, $this->request, $controllerClass, $args);
         $this->response = new ApplicationResponse(
             $controllerClass,
             $controller->getControllerResponse(),
