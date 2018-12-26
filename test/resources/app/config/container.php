@@ -13,17 +13,17 @@ use Symfony\Component\HttpFoundation\Session\Storage\Handler\NativeFileSessionHa
 use Symfony\Component\HttpFoundation\Session\Storage\NativeSessionStorage;
 use Selami\Stdlib\BaseUrlExtractor;
 
-$request = \Zend\Diactoros\ServerRequestFactory::fromGlobals($_SERVER, $_GET, $_POST, $_COOKIE, $_FILES);
-
+$request = Zend\Diactoros\ServerRequestFactory::fromGlobals($_SERVER, $_GET, $_POST, $_COOKIE, $_FILES);
 $config = include __DIR__ . '/config.php';
-$router = include __DIR__ . '/routes.php';
 $container = new ServiceManager($config['dependencies']);
 if (PHP_SAPI !== 'cli') {
     $config['app']['base_url'] = BaseUrlExtractor::getBaseUrl($_SERVER);
 }
 
 $container->setService(Config::class, new Config($config));
-$container->setService('http-error-handler', \MyApp\ErrorHandler::class);
+$container->setService('http-error-handler', MyApp\ErrorHandler::class);
+$container->setService('http_error_handler', 'Deneme');
+
 $container->setFactory(SessionInterface::class, function () {
     $sessionStorage = new NativeSessionStorage(array(), new NativeFileSessionHandler());
     return new Session($sessionStorage);

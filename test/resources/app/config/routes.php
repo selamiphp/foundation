@@ -9,5 +9,4 @@ $router = new Router(
     $request->getUri()->getPath()
 );
 
-
 return $router;

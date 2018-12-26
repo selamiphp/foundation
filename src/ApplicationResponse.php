@@ -23,7 +23,6 @@ class ApplicationResponse
     private $controllerResponse;
     private $config;
     private $view;
-    private $response;
 
     public function __construct(
         string $controllerClass,

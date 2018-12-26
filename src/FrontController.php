@@ -4,11 +4,10 @@ declare(strict_types=1);
 namespace Selami;
 
 use Psr\Container\ContainerInterface;
-use Selami\Router\Router;
 use Selami\Stdlib\Resolver;
 use ReflectionClass;
 
-class ApplicationController
+class FrontController
 {
     private $container;
     private $controller;
@@ -24,7 +23,6 @@ class ApplicationController
         $this->controller = $controller;
         $this->uriParameters = $uriParameters;
     }
-
 
     public function getUriParameters() : array
     {
@@ -42,7 +40,7 @@ class ApplicationController
         $controllerClass = new ReflectionClass($this->controllerClass);
 
         /**
-         * @var $controllerObject \Selami\Interfaces\Controller
+         * @var $controllerObject \Selami\Interfaces\ApplicationController
          */
         $controllerObject = $controllerClass->newInstanceArgs($arguments);
         return $controllerObject();
@@ -50,10 +48,10 @@ class ApplicationController
 
     private function getArgument(string $argumentName, string $argumentType)
     {
-        if ($argumentType === Resolver::ARRAY) {
-            return $this->container->has($argumentName) ?
-                $this->container->get($argumentName) :  $this->{'get'.ucfirst($argumentName)}();
+        if ($argumentType === Resolver::ARRAY && $argumentName === 'uriParameters') {
+            return $this->getUriParameters();
         }
-        return $this->container->get($argumentType);
+        return  $this->container->has($argumentType) ? $this->container->get($argumentType) :
+            $this->container->get($argumentName);
     }
 }

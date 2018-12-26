@@ -15,15 +15,15 @@
   "require": {
     "php": "^7.2",
     "psr/container": "^1.0",
+    "container-interop/container-interop": "^1.2",
     "psr/http-message": "^1.0",
     "psr/http-server-handler": "^1.0",
     "selami/stdlib": "^1.8",
     "selami/router": "^1.1",
     "selami/views": "^0.9",
     "zendframework/zend-config": "^3.2",
-    "zendframework/zend-servicemanager": "^3.3",
-    "zendframework/zend-diactoros": "^2.0",
-    "zendframework/zend-httphandlerrunner": "^1.0"
+    "zendframework/zend-diactoros": "^2.1"
+
   },
   "require-dev": {
     "roave/security-advisories": "dev-master",
@@ -32,7 +32,11 @@
     "symfony/http-foundation": "^4.2",
     "squizlabs/php_codesniffer": "^3.4",
     "phpstan/phpstan": "^0.10.6",
+    "zendframework/zend-servicemanager": "^3.3",
+    "zendframework/zend-stdlib": "^3.2",
     "zendframework/zend-stratigility": "^3.0",
+    "zendframework/zend-httphandlerrunner": "^1.0",
+
     "twig/twig": "^2.6",
     "twig/extensions": "^1.5"
   },

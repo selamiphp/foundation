@@ -38,6 +38,9 @@ class Application implements RequestHandlerInterface
      * @var ServerRequestInterface
      */
     private $request;
+    private $requestedMethod;
+    private $requestedPath;
+    private $route;
 
     public function __construct(
         string $id,
@@ -78,6 +81,8 @@ class Application implements RequestHandlerInterface
 
     private function run() : void
     {
+        $this->requestedMethod = $this->request->getMethod();
+        $this->requestedPath = $this->request->getUri()->getPath();
         $route = $this->getRoute();
         $statusCode = $route->getStatusCode();
         switch ($statusCode) {
@@ -85,7 +90,7 @@ class Application implements RequestHandlerInterface
                 $this->notFound(405, 'Method Not Allowed');
                 break;
             case 200:
-                $this->runRoute(
+                $this->runController(
                     $route->getController(),
                     $route->getUriParameters()
                 );
@@ -119,19 +124,23 @@ class Application implements RequestHandlerInterface
                 ->withCacheFile($cacheFile);
         }
         $this->addRoutes($this->config->routes);
-        return $this->router->getRoute();
+        return $this->route ?? $this->router->getRoute();
     }
 
     private function addRoutes($routes) : void
     {
         foreach ($routes as $route) {
+            if ($this->requestedMethod === $route[0] && $this->requestedPath === $route[1]) {
+                $this->route = new Route($route[0], $route[1], 200,  $route[3], $route[2], []);
+                break;
+            }
             $this->router->add($route[0], $route[1], $route[2], $route[3], $route[4] ?? '');
         }
     }
 
-    private function runRoute($controllerClass, array $args) : void
+    private function runController($controllerClass, array $args) : void
     {
-        $controller = new ApplicationController($this->container, $controllerClass, $args);
+        $controller = new FrontController($this->container, $controllerClass, $args);
         $this->response = new ApplicationResponse(
             $controllerClass,
             $controller->getControllerResponse(),

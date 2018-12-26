@@ -5,7 +5,7 @@ namespace Selami\Interfaces;
 
 use Selami\ControllerResponse;
 
-interface Controller
+interface ApplicationController
 {
     public function __invoke() : ControllerResponse;
 }
