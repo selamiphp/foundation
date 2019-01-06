@@ -11,6 +11,6 @@ use Zend\Diactoros\ServerRequestFactory;
 $serverRequestFactory = [ServerRequestFactory::class, 'fromGlobals'];
 $stack = new EmitterStack();
 $stack->push(new SapiEmitter());
-$myApp = Selami\Application::createWithContainer($container, 'selami');
+$myApp = Selami\Application::createWithContainer($container, 'selami-app');
 $response = $myApp->handle($serverRequestFactory());
 $stack->emit($response);
