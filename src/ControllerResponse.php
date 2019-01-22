@@ -15,48 +15,71 @@ final class ControllerResponse
     private $statusCode;
     private $metaData;
 
-    public function __construct(int $returnType, int $statusCode, array $headers, array $data, array $metaData)
+    public function __construct(int $returnType, int $statusCode, array $data)
     {
         $this->returnType = $returnType;
         $this->statusCode = $statusCode;
-        $this->headers = $headers;
+        $this->headers = [];
         $this->data = $data;
-        $this->metaData = $metaData;
+        $this->metaData = [];
     }
 
-    public static function CUSTOM(int $statusCode, array $data, array $metaData, array $headers) : self
+    public function withHeaders(array $headers) : self
     {
-        return new self(Router::CUSTOM, $statusCode, $headers, $data, $metaData);
+        $new = clone $this;
+        $new->headers = $headers;
+        return $new;
     }
 
-    public static function EMPTY(int $statusCode, array $data, array $metaData, array $headers) : self
+    public function withMetaData(array $metaData) : self
     {
-        return new self(Router::EMPTY, $statusCode, $headers, $data, $metaData);
+        $new = clone $this;
+        $new->metaData = $metaData;
+        return $new;
     }
 
-    public static function HTML(int $statusCode, array $data, ?array $metaData = []) : self
+    public static function CUSTOM(int $statusCode, array $data, ?array $metaData=[], ?array $headers =[]) : self
     {
-        return new self(Router::HTML, $statusCode, [], $data, $metaData);
+        return (new self(Router::CUSTOM, $statusCode, $data))
+            ->withHeaders($headers)
+            ->withMetaData($metaData);
     }
 
-    public static function JSON(int $statusCode, array $data, ?array $metaData = []) : self
+    public static function EMPTY(int $statusCode, array $data, ?array $metaData=[], ?array $headers=[]) : self
     {
-        return new self(Router::JSON, $statusCode, [], $data, $metaData);
+        return (new self(Router::EMPTY, $statusCode, $data))
+            ->withHeaders($headers)
+            ->withMetaData($metaData);
     }
 
-    public static function TEXT(int $statusCode, array $data, ?array $metaData = []) : self
+    public static function HTML(int $statusCode, array $data, ?array $metaData = [], ?array $headers=[]) : self
     {
-        return new self(Router::TEXT, $statusCode, [], $data, $metaData);
+        return (new self(Router::HTML, $statusCode, $data))
+            ->withHeaders($headers)
+            ->withMetaData($metaData);
     }
 
-    public static function XML(int $statusCode, array $xmlData, ?array $metaData = []) : self
+    public static function JSON(int $statusCode, array $data, ?array $headers=[]) : self
     {
-        return new self(Router::XML, $statusCode, [], $xmlData, $metaData);
+        return (new self(Router::JSON, $statusCode, $data))
+            ->withHeaders($headers);
+    }
+
+    public static function TEXT(int $statusCode, array $data) : self
+    {
+        return new self(Router::TEXT, $statusCode, $data);
+    }
+
+    public static function XML(int $statusCode, array $xmlData, ?array $headers=[]) : self
+    {
+        return (new self(Router::XML, $statusCode,  $xmlData ))
+            ->withHeaders($headers);
     }
 
     public static function REDIRECT(int $statusCode, string $redirectUrl) : self
     {
-        return new self(Router::REDIRECT, $statusCode, [], [], ['uri' => $redirectUrl]);
+        return (new self(Router::REDIRECT, $statusCode, []))
+            ->withHeaders(['uri' => $redirectUrl]);
     }
 
     public static function DOWNLOAD(int $statusCode, string $filePath, ?string $fileName = null) : self
@@ -72,7 +95,9 @@ final class ControllerResponse
             'Cache-Control' =>  'must-revalidate',
             'Content-Length' =>  (string) $stream->getSize()
         ];
-        return new self(Router::DOWNLOAD, $statusCode, $headers, [], ['stream' => $stream]);
+        return (new self(Router::DOWNLOAD, $statusCode, []))
+            ->withHeaders($headers)
+            ->withMetaData(['stream' => $stream]);
     }
 
     public function getReturnType() : int
