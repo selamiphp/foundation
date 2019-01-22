@@ -23,6 +23,7 @@ class ApplicationResponse
     private $controllerResponse;
     private $config;
     private $view;
+    private $headers;
 
     public function __construct(
         string $controllerClass,
@@ -33,7 +34,14 @@ class ApplicationResponse
         $this->controllerClass = $controllerClass;
         $this->controllerResponse = $controllerResponse;
         $this->config = $config;
+        $this->headers = isset( $config->get('app')['default_headers']) ?
+            $config->get('app')->get('default_headers')->toArray() : [];
         $this->view = $view;
+    }
+
+    public function getResponseHeaders() : array
+    {
+        return array_merge($this->headers, $this->controllerResponse->getHeaders());
     }
 
     public function returnResponse() : ResponseInterface
@@ -43,28 +51,28 @@ class ApplicationResponse
                 return new HtmlResponse(
                     $this->renderResponse(),
                     $this->controllerResponse->getStatusCode(),
-                    $this->controllerResponse->getHeaders()
+                    $this->getResponseHeaders()
                 );
                 break;
             case Router::JSON:
                 return new JsonResponse(
                     $this->controllerResponse->getData(),
                     $this->controllerResponse->getStatusCode(),
-                    $this->controllerResponse->getHeaders()
+                    $this->getResponseHeaders()
                 );
                 break;
             case Router::TEXT:
                 return new TextResponse(
                     $this->renderResponse(),
                     $this->controllerResponse->getStatusCode(),
-                    $this->controllerResponse->getHeaders()
+                    $this->getResponseHeaders()
                 );
                 break;
             case Router::XML:
                 return new XmlResponse(
                     $this->renderResponse(),
                     $this->controllerResponse->getStatusCode(),
-                    $this->controllerResponse->getHeaders()
+                    $this->getResponseHeaders()
                 );
                 break;
             case Router::DOWNLOAD:
@@ -76,27 +84,27 @@ class ApplicationResponse
                 return new Response(
                     $stream,
                     $this->controllerResponse->getStatusCode(),
-                    $this->controllerResponse->getHeaders()
+                    $this->getResponseHeaders()
                 );
                 break;
             case Router::REDIRECT:
                 return new RedirectResponse(
                     $this->controllerResponse->getMetaData()['uri'],
                     $this->controllerResponse->getStatusCode(),
-                    $this->controllerResponse->getHeaders()
+                    $this->getResponseHeaders()
                 );
                 break;
             case Router::CUSTOM:
                 return new HtmlResponse(
                     $this->renderResponse(),
                     $this->controllerResponse->getStatusCode(),
-                    $this->controllerResponse->getHeaders()
+                    $this->getResponseHeaders()
                 );
                 break;
             case Router::EMPTY:
                 return new EmptyResponse(
                     $this->controllerResponse->getStatusCode(),
-                    $this->controllerResponse->getHeaders()
+                    $this->getResponseHeaders()
                 );
                 break;
         }
