@@ -125,7 +125,7 @@ class Application implements RequestHandlerInterface
             $this->router = $this->router
                 ->withCacheFile($cacheFile);
         }
-        $this->addRoutes($this->config->get('routes')->get($this->id));
+        $this->addRoutes($this->config->get('routes')->get($this->id)->toArray());
         return $this->route ?? $this->router->getRoute();
     }
 
