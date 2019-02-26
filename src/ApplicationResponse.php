@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Selami;
 
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Zend\Config\Config;
 use Selami\View\ViewInterface;
 use Selami\Router\Router;
@@ -26,6 +27,7 @@ class ApplicationResponse
     private $headers;
 
     public function __construct(
+        ServerRequestInterface $request,
         string $controllerClass,
         ControllerResponse $controllerResponse,
         Config $config,
@@ -37,6 +39,11 @@ class ApplicationResponse
         $this->headers = isset( $config->get('app')['default_headers']) ?
             $config->get('app')->get('default_headers')->toArray() : [];
         $this->view = $view;
+        $this->view->addGlobal('Request', $request);
+        $this->view->addGlobal(
+            'QueryParameters',
+            array_merge($request->getQueryParams(), $request->getParsedBody())
+        );
     }
 
     public function getResponseHeaders() : array

@@ -108,6 +108,7 @@ class Application implements RequestHandlerInterface
         $errorHandlerClass = $this->config->get('app')->get('http-error-handler');
         $errorHandler = new $errorHandlerClass($status, $message);
         $this->response = new ApplicationResponse(
+            $this->request,
             $errorHandlerClass,
             $errorHandler(),
             $this->config,
@@ -144,6 +145,7 @@ class Application implements RequestHandlerInterface
     {
         $controller = new FrontController($this->container, $this->request, $controllerClass, $args);
         $this->response = new ApplicationResponse(
+            $this->request,
             $controllerClass,
             $controller->getControllerResponse(),
             $this->config,
