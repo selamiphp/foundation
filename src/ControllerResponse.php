@@ -79,7 +79,7 @@ final class ControllerResponse
     public static function REDIRECT(int $statusCode, string $redirectUrl) : self
     {
         return (new self(Router::REDIRECT, $statusCode, []))
-            ->withHeaders(['uri' => $redirectUrl]);
+            ->withMetaData(['uri' => $redirectUrl]);
     }
 
     public static function DOWNLOAD(int $statusCode, string $filePath, ?string $fileName = null) : self
