@@ -65,7 +65,8 @@ class ApplicationResponse
                 return new JsonResponse(
                     $this->controllerResponse->getData(),
                     $this->controllerResponse->getStatusCode(),
-                    $this->getResponseHeaders()
+                    $this->getResponseHeaders(),
+                    JsonResponse::DEFAULT_JSON_FLAGS | JSON_PARTIAL_OUTPUT_ON_ERROR
                 );
                 break;
             case Router::TEXT:
